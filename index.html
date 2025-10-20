@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Eternal Universe of Us ✨</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
@@ -19,12 +20,21 @@
             --text-light: #ffffff;
         }
 
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
         body {
             font-family: 'Georgia', serif;
             background: var(--bg-dark);
             color: var(--text-light);
             overflow-x: hidden;
             cursor: none;
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
         }
 
         body.allow-cursor {
@@ -42,11 +52,12 @@
             z-index: 10000;
             transition: transform 0.1s ease;
             box-shadow: 0 0 20px var(--primary-glow);
+            display: none;
         }
 
-        @media (max-width: 768px) {
-            #custom-cursor { display: none; }
-            body { cursor: default; }
+        @media (min-width: 769px) {
+            #custom-cursor { display: block; }
+            body { cursor: none; }
         }
 
         .cursor-trail {
@@ -119,6 +130,7 @@
         .loading-text {
             font-size: clamp(24px, 5vw, 36px);
             background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow), var(--tertiary-glow));
+            background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -138,6 +150,7 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            pointer-events: none;
         }
 
         /* Progress Bar */
@@ -184,6 +197,18 @@
             box-shadow: 0 0 20px var(--primary-glow);
         }
 
+        @media (max-width: 768px) {
+            #music-controls {
+                bottom: 15px;
+                right: 15px;
+            }
+            .control-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
+
         /* Chapter Container */
         .chapter {
             position: relative;
@@ -192,7 +217,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             z-index: 2;
             opacity: 0;
             transform: translateY(50px);
@@ -227,6 +252,7 @@
             background: linear-gradient(to bottom, white, transparent);
             animation: shoot 3s ease-in-out infinite;
             opacity: 0;
+            pointer-events: none;
         }
 
         @keyframes shoot {
@@ -261,16 +287,32 @@
 
         .planets-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
             max-width: 900px;
             width: 100%;
             margin-top: 40px;
+            padding: 20px;
+        }
+
+        @media (min-width: 600px) {
+            .planets-container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 50px;
+            }
+        }
+
+        .planet-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            position: relative;
         }
 
         .planet {
-            width: 150px;
-            height: 150px;
+            width: clamp(120px, 25vw, 150px);
+            height: clamp(120px, 25vw, 150px);
             border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, var(--primary-glow), var(--secondary-glow));
             cursor: pointer;
@@ -278,34 +320,25 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: clamp(35px, 8vw, 45px);
             box-shadow: 0 0 30px rgba(255, 110, 199, 0.5);
-            position: relative;
-            margin: 0 auto;
+            flex-shrink: 0;
         }
 
         .planet:hover, .planet:active {
-            transform: scale(1.2) rotate(10deg);
+            transform: scale(1.15) rotate(10deg);
             box-shadow: 0 0 50px var(--primary-glow);
         }
 
-        .planet-tooltip {
-            position: absolute;
-            bottom: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .planet:hover .planet-tooltip {
-            opacity: 1;
+        .planet-label {
+            font-size: clamp(12px, 3vw, 14px);
+            text-align: center;
+            color: var(--primary-glow);
+            font-weight: bold;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Chapter 3: Constellations */
@@ -317,8 +350,14 @@
             position: relative;
             width: 100%;
             max-width: 600px;
-            height: 400px;
+            height: 300px;
             margin-top: 40px;
+        }
+
+        @media (min-width: 768px) {
+            .constellation-container {
+                height: 400px;
+            }
         }
 
         .constellation {
@@ -329,8 +368,8 @@
 
         .constellation-star {
             position: absolute;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             background: white;
             border-radius: 50%;
             cursor: pointer;
@@ -338,7 +377,14 @@
             box-shadow: 0 0 10px white;
         }
 
-        .constellation-star:hover {
+        @media (min-width: 768px) {
+            .constellation-star {
+                width: 12px;
+                height: 12px;
+            }
+        }
+
+        .constellation-star:hover, .constellation-star:active {
             transform: scale(2);
             box-shadow: 0 0 30px var(--primary-glow);
         }
@@ -348,11 +394,12 @@
             height: 2px;
             background: rgba(255, 255, 255, 0.3);
             transform-origin: left center;
+            pointer-events: none;
         }
 
         .love-note {
             position: absolute;
-            bottom: -60px;
+            bottom: -80px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(255, 110, 199, 0.2);
@@ -365,10 +412,12 @@
             transition: opacity 0.5s ease;
             max-width: 90%;
             text-align: center;
+            font-size: clamp(12px, 2.5vw, 16px);
         }
 
         .constellation-star:hover ~ .love-note,
-        .constellation-star:active ~ .love-note {
+        .constellation-star:active ~ .love-note,
+        .love-note.show {
             opacity: 1;
         }
 
@@ -378,18 +427,32 @@
         }
 
         .bubbles-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             max-width: 1000px;
             margin-top: 40px;
             perspective: 1000px;
+            padding: 0 10px;
+        }
+
+        @media (min-width: 600px) {
+            .bubbles-container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 25px;
+            }
+        }
+
+        @media (min-width: 900px) {
+            .bubbles-container {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 30px;
+            }
         }
 
         .bubble {
-            width: clamp(120px, 20vw, 180px);
-            height: clamp(120px, 20vw, 180px);
+            width: 100%;
+            aspect-ratio: 1;
             border-radius: 50%;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
             backdrop-filter: blur(10px);
@@ -401,9 +464,9 @@
             transition: all 0.5s ease;
             animation: float 6s ease-in-out infinite;
             position: relative;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
-            font-size: clamp(12px, 2vw, 16px);
+            font-size: clamp(11px, 2vw, 15px);
         }
 
         .bubble:nth-child(odd) {
@@ -412,11 +475,11 @@
 
         @keyframes float {
             0%, 100% { transform: translateY(0) rotateX(0deg) rotateY(0deg); }
-            50% { transform: translateY(-20px) rotateX(5deg) rotateY(5deg); }
+            50% { transform: translateY(-15px) rotateX(3deg) rotateY(3deg); }
         }
 
         .bubble:hover, .bubble:active {
-            transform: scale(1.2) translateY(-10px);
+            transform: scale(1.1) translateY(-10px);
             box-shadow: 0 0 40px var(--tertiary-glow);
             background: linear-gradient(135deg, rgba(6, 182, 212, 0.3) 0%, rgba(124, 58, 237, 0.3) 100%);
         }
@@ -425,10 +488,12 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             font-style: italic;
+            line-height: 1.3;
         }
 
         .bubble:hover .bubble-content,
-        .bubble:active .bubble-content {
+        .bubble:active .bubble-content,
+        .bubble.active .bubble-content {
             opacity: 1;
         }
 
@@ -446,6 +511,7 @@
             background: linear-gradient(to bottom, white, transparent);
             animation: meteor 2s ease-out infinite;
             opacity: 0;
+            pointer-events: none;
         }
 
         @keyframes meteor {
@@ -529,7 +595,7 @@
             backdrop-filter: blur(20px);
             border: 3px solid var(--primary-glow);
             border-radius: 20px;
-            padding: 40px;
+            padding: 50px 30px 30px 30px;
             z-index: 5000;
             opacity: 0;
             transition: all 0.5s ease;
@@ -557,10 +623,10 @@
 
         .close-letter {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             background: var(--primary-glow);
             color: white;
@@ -571,10 +637,11 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.3s ease;
+            z-index: 10;
         }
 
-        .close-letter:hover {
-            transform: rotate(90deg);
+        .close-letter:hover, .close-letter:active {
+            transform: rotate(90deg) scale(1.1);
         }
 
         /* Secret Star */
@@ -597,7 +664,7 @@
             50% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 30px gold; }
         }
 
-        .secret-star:hover {
+        .secret-star:hover, .secret-star:active {
             transform: scale(2);
         }
 
@@ -611,7 +678,7 @@
             backdrop-filter: blur(20px);
             border: 2px solid var(--tertiary-glow);
             border-radius: 20px;
-            padding: 40px;
+            padding: 40px 30px;
             max-width: 90%;
             width: 500px;
             z-index: 6000;
@@ -648,57 +715,9 @@
             transition: all 0.3s ease;
         }
 
-        .modal button:hover {
+        .modal button:hover, .modal button:active {
             transform: scale(1.05);
             box-shadow: 0 0 20px var(--tertiary-glow);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .chapter {
-                padding: 40px 15px;
-            }
-
-            .planets-container {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
-            }
-
-            .planet {
-                width: 120px;
-                height: 120px;
-                font-size: 30px;
-            }
-
-            .constellation-container {
-                height: 300px;
-            }
-
-            .bubbles-container {
-                gap: 15px;
-            }
-
-            .bubble {
-                width: 100px;
-                height: 100px;
-                font-size: 11px;
-                padding: 10px;
-            }
-
-            .love-letter {
-                padding: 25px;
-            }
-
-            #music-controls {
-                bottom: 10px;
-                right: 10px;
-            }
-
-            .control-btn {
-                width: 45px;
-                height: 45px;
-                font-size: 18px;
-            }
         }
 
         /* Accessibility */
@@ -726,6 +745,22 @@
 
         ::-webkit-scrollbar-thumb:hover {
             background: var(--secondary-glow);
+        }
+
+        /* Fix for mobile scroll */
+        @media (max-width: 768px) {
+            body {
+                position: relative;
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .chapter {
+                padding: 60px 15px;
+                min-height: auto;
+                padding-bottom: 100px;
+            }
         }
     </style>
 </head>
@@ -776,32 +811,32 @@
     <section class="chapter" id="ch2">
         <h1 class="chapter-title">First Light ☀️</h1>
         <p style="margin-bottom: 20px; font-size: clamp(14px, 2.5vw, 18px); text-align: center; max-width: 700px;">
-            Each planet holds a precious memory of us. Click to explore our universe...
+            Each planet holds a precious memory of us. Tap to explore our universe...
         </p>
         <div class="planets-container">
-            <div class="planet" data-memory="Our first conversation - I knew instantly you were special">
-                🌍
-                <div class="planet-tooltip">First Words</div>
+            <div class="planet-wrapper">
+                <div class="planet" data-memory="Our first conversation - I knew instantly you were special">🌍</div>
+                <div class="planet-label">First Words</div>
             </div>
-            <div class="planet" data-memory="The day you smiled at me - my whole world lit up">
-                🪐
-                <div class="planet-tooltip">That Smile</div>
+            <div class="planet-wrapper">
+                <div class="planet" data-memory="The day you smiled at me - my whole world lit up">🪐</div>
+                <div class="planet-label">That Smile</div>
             </div>
-            <div class="planet" data-memory="Our first laugh together - music to my soul">
-                🌙
-                <div class="planet-tooltip">First Laugh</div>
+            <div class="planet-wrapper">
+                <div class="planet" data-memory="Our first laugh together - music to my soul">🌙</div>
+                <div class="planet-label">First Laugh</div>
             </div>
-            <div class="planet" data-memory="When I realized I was falling for you - unstoppable">
-                ⭐
-                <div class="planet-tooltip">Falling</div>
+            <div class="planet-wrapper">
+                <div class="planet" data-memory="When I realized I was falling for you - unstoppable">⭐</div>
+                <div class="planet-label">Falling</div>
             </div>
-            <div class="planet" data-memory="Every moment with you - infinite treasures">
-                💫
-                <div class="planet-tooltip">Every Moment</div>
+            <div class="planet-wrapper">
+                <div class="planet" data-memory="Every moment with you - infinite treasures">💫</div>
+                <div class="planet-label">Every Moment</div>
             </div>
-            <div class="planet" data-memory="Our future together - the brightest star ahead">
-                ✨
-                <div class="planet-tooltip">Forever</div>
+            <div class="planet-wrapper">
+                <div class="planet" data-memory="Our future together - the brightest star ahead">✨</div>
+                <div class="planet-label">Forever</div>
             </div>
         </div>
     </section>
@@ -810,7 +845,7 @@
     <section class="chapter" id="ch3">
         <h1 class="chapter-title">The Constellations ✨</h1>
         <p style="margin-bottom: 20px; font-size: clamp(14px, 2.5vw, 18px); text-align: center;">
-            The stars have aligned to spell our destiny. Hover to reveal their secrets...
+            The stars have aligned to spell our destiny. Touch to reveal their secrets...
         </p>
         <div class="constellation-container">
             <div class="constellation" id="constellation-love">
@@ -830,7 +865,7 @@
                 <span class="bubble-content">You make my heart race every single day</span>
             </div>
             <div class="bubble">
-                <span class="bubble-content">Your laughter is my favorite sound in the universe</span>
+                <span class="bubble-content">Your laughter is my favorite sound</span>
             </div>
             <div class="bubble">
                 <span class="bubble-content">I think about you in every quiet moment</span>
@@ -848,7 +883,7 @@
                 <span class="bubble-content">I fall deeper in love with you every moment</span>
             </div>
             <div class="bubble">
-                <span class="bubble-content">You are the best thing that ever happened to me</span>
+                <span class="bubble-content">You are the best thing that happened to me</span>
             </div>
         </div>
     </section>
@@ -882,7 +917,7 @@
             </div>
         </div>
         <p style="margin-top: 30px; font-size: clamp(14px, 2.5vw, 18px); font-style: italic; text-align: center;">
-            Click to enter...
+            Tap to enter...
         </p>
     </section>
 
@@ -938,6 +973,7 @@
         // ==================== INITIALIZATION ====================
         let musicPlaying = false;
         let scrollProgress = 0;
+        let isMobile = window.innerWidth <= 768;
 
         // Update names
         document.getElementById('loading-name').textContent = CONFIG.herName;
@@ -967,6 +1003,11 @@
                     musicPlaying = true;
                 }).catch(e => console.log('Music autoplay prevented'));
             }
+
+            // Trigger initial scroll check
+            setTimeout(() => {
+                window.dispatchEvent(new Event('scroll'));
+            }, 100);
         }
 
         // ==================== CUSTOM CURSOR ====================
@@ -997,11 +1038,16 @@
         // ==================== STARFIELD CANVAS ====================
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = document.documentElement.scrollHeight;
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = document.documentElement.scrollHeight;
+        }
+        
+        resizeCanvas();
 
         const stars = [];
-        const starCount = window.innerWidth > 768 ? 500 : 200;
+        const starCount = isMobile ? 200 : 500;
 
         for (let i = 0; i < starCount; i++) {
             stars.push({
@@ -1032,13 +1078,10 @@
 
         animateStars();
 
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = document.documentElement.scrollHeight;
-        });
+        // ==================== SCROLL PROGRESS & CHAPTER REVEAL ====================
+        let ticking = false;
 
-        // ==================== SCROLL PROGRESS ====================
-        window.addEventListener('scroll', () => {
+        function updateScrollProgress() {
             const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
             scrollProgress = (window.scrollY / scrollHeight) * 100;
             document.getElementById('progress-bar').style.width = scrollProgress + '%';
@@ -1046,14 +1089,23 @@
             // Reveal chapters
             document.querySelectorAll('.chapter').forEach(chapter => {
                 const rect = chapter.getBoundingClientRect();
-                if (rect.top < window.innerHeight * 0.75) {
+                const windowHeight = window.innerHeight;
+                
+                // More aggressive reveal for mobile
+                if (rect.top < windowHeight * 0.8) {
                     chapter.classList.add('visible');
                 }
             });
-        });
 
-        // Trigger initial check
-        window.dispatchEvent(new Event('scroll'));
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(updateScrollProgress);
+                ticking = true;
+            }
+        }, { passive: true });
 
         // ==================== MUSIC CONTROLS ====================
         document.getElementById('music-toggle').addEventListener('click', () => {
@@ -1073,11 +1125,27 @@
 
         // ==================== CHAPTER 2: PLANETS ====================
         document.querySelectorAll('.planet').forEach(planet => {
-            planet.addEventListener('click', function() {
+            const showMemory = function(e) {
+                e.preventDefault();
                 const memory = this.getAttribute('data-memory');
-                alert('💫 ' + memory);
-                // You can replace alert with a nicer modal if desired
-            });
+                
+                // Create custom modal for better mobile experience
+                const existingModal = document.getElementById('memory-modal');
+                if (existingModal) existingModal.remove();
+                
+                const modal = document.createElement('div');
+                modal.id = 'memory-modal';
+                modal.className = 'modal visible';
+                modal.innerHTML = `
+                    <h3>💫 Memory</h3>
+                    <p>${memory}</p>
+                    <button onclick="this.parentElement.remove()">Close</button>
+                `;
+                document.body.appendChild(modal);
+            };
+            
+            planet.addEventListener('click', showMemory);
+            planet.addEventListener('touchend', showMemory);
         });
 
         // ==================== CHAPTER 3: CONSTELLATIONS ====================
@@ -1100,11 +1168,15 @@
             star.className = 'constellation-star';
             star.style.left = (pos.x / 270 * 100) + '%';
             star.style.top = (pos.y / 80 * 100) + '%';
-            star.setAttribute('data-note', 'Every star in this constellation represents a moment I fell deeper in love with you ✨');
             constellationContainer.appendChild(star);
 
             // Connect stars with lines
-            if (i > 0) {
+            if (i > 0 && (
+                (i >= 1 && i <= 3) || // L
+                (i >= 5 && i <= 10) || // O
+                (i >= 11 && i <= 12) || // V
+                (i >= 14 && i <= 18) // E
+            )) {
                 const prevPos = lovePattern[i - 1];
                 const line = document.createElement('div');
                 line.className = 'constellation-line';
@@ -1124,34 +1196,58 @@
         loveNote.textContent = 'Every star represents a moment I fell deeper in love with you ✨';
         constellationContainer.appendChild(loveNote);
 
-        // Show note on any star hover
+        // Show note on any star interaction
+        let noteTimeout;
         document.querySelectorAll('.constellation-star').forEach(star => {
             star.addEventListener('mouseenter', () => {
-                loveNote.style.opacity = '1';
+                loveNote.classList.add('show');
             });
             star.addEventListener('mouseleave', () => {
-                loveNote.style.opacity = '0';
+                loveNote.classList.remove('show');
             });
             // Mobile support
             star.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                loveNote.style.opacity = '1';
-                setTimeout(() => loveNote.style.opacity = '0', 3000);
+                loveNote.classList.add('show');
+                clearTimeout(noteTimeout);
+                noteTimeout = setTimeout(() => loveNote.classList.remove('show'), 3000);
             });
         });
+
+        // ==================== CHAPTER 4: BUBBLES ====================
+        if (isMobile) {
+            document.querySelectorAll('.bubble').forEach(bubble => {
+                bubble.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    // Remove active from all bubbles
+                    document.querySelectorAll('.bubble').forEach(b => b.classList.remove('active'));
+                    // Add active to this bubble
+                    this.classList.add('active');
+                    
+                    // Remove after 3 seconds
+                    setTimeout(() => {
+                        this.classList.remove('active');
+                    }, 3000);
+                });
+            });
+        }
 
         // ==================== CHAPTER 6: PORTAL ====================
         const portal = document.getElementById('portal');
         const loveLetter = document.getElementById('love-letter');
         const closeLetter = document.getElementById('close-letter');
 
-        portal.addEventListener('click', () => {
+        const openLetter = function(e) {
+            e.preventDefault();
             loveLetter.classList.add('visible');
-            // Type effect for letter
+            document.body.style.overflow = 'hidden';
+            
+            // Type effect for letter (faster for mobile)
             const content = document.getElementById('letter-content');
             const originalHTML = content.innerHTML;
             content.innerHTML = '';
             let i = 0;
+            const speed = isMobile ? 10 : 20;
             
             const typeInterval = setInterval(() => {
                 if (i < originalHTML.length) {
@@ -1160,11 +1256,24 @@
                 } else {
                     clearInterval(typeInterval);
                 }
-            }, 20);
+            }, speed);
+        };
+
+        portal.addEventListener('click', openLetter);
+        portal.addEventListener('touchend', openLetter);
+
+        closeLetter.addEventListener('click', (e) => {
+            e.preventDefault();
+            loveLetter.classList.remove('visible');
+            document.body.style.overflow = '';
         });
 
-        closeLetter.addEventListener('click', () => {
-            loveLetter.classList.remove('visible');
+        // Close on backdrop tap
+        loveLetter.addEventListener('click', (e) => {
+            if (e.target === loveLetter) {
+                loveLetter.classList.remove('visible');
+                document.body.style.overflow = '';
+            }
         });
 
         // ==================== SECRET STAR ====================
@@ -1172,48 +1281,39 @@
         const secretModal = document.getElementById('secret-modal');
         const closeSecret = document.getElementById('close-secret');
 
-        secretStar.addEventListener('click', () => {
+        const openSecret = function(e) {
+            e.preventDefault();
             secretModal.classList.add('visible');
             secretStar.style.display = 'none';
-            
-            // Play special sound if available
-            // const secretSound = new Audio('secret.mp3');
-            // secretSound.play();
-        });
+        };
 
-        closeSecret.addEventListener('click', () => {
+        secretStar.addEventListener('click', openSecret);
+        secretStar.addEventListener('touchend', openSecret);
+
+        closeSecret.addEventListener('click', (e) => {
+            e.preventDefault();
             secretModal.classList.remove('visible');
         });
 
-        // ==================== RESPONSIVE CANVAS ====================
+        // ==================== RESPONSIVE CANVAS RESIZE ====================
         let resizeTimeout;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                canvas.width = window.innerWidth;
-                canvas.height = document.documentElement.scrollHeight;
+                resizeCanvas();
+                isMobile = window.innerWidth <= 768;
             }, 250);
         });
 
-        // ==================== PREVENT CONTEXT MENU ON LONG PRESS ====================
-        document.addEventListener('contextmenu', (e) => {
-            if (e.target.classList.contains('planet') || 
-                e.target.classList.contains('bubble') ||
-                e.target.classList.contains('portal')) {
+        // ==================== PREVENT ZOOM ON DOUBLE TAP ====================
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
                 e.preventDefault();
             }
-        });
-
-        // ==================== SMOOTH SCROLL ====================
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
+            lastTouchEnd = now;
+        }, false);
 
         // ==================== CONSOLE MESSAGE ====================
         console.log('%c✨ Made with infinite love ✨', 'font-size: 20px; color: #ff6ec7; font-weight: bold;');
