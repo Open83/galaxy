@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternal Universe of Us ✨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-glow: #ff6ec7;
+            --secondary-glow: #7c3aed;
+            --tertiary-glow: #06b6d4;
+            --bg-dark: #0a0a1f;
+            --text-light: #ffffff;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        body.allow-cursor {
+            cursor: default;
+        }
+
+        /* Custom Cursor */
+        #custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-glow);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        @media (max-width: 768px) {
+            #custom-cursor { display: none; }
+            body { cursor: default; }
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-glow);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.8;
+            animation: fadeOut 1s forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a1f 0%, #1a0a2e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            transition: opacity 1s ease;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-stars {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin-bottom: 30px;
+        }
+
+        .loading-star {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        .loading-star:nth-child(1) { top: 20%; left: 30%; animation-delay: 0s; }
+        .loading-star:nth-child(2) { top: 40%; right: 20%; animation-delay: 0.3s; }
+        .loading-star:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 0.6s; }
+        .loading-star:nth-child(4) { bottom: 20%; right: 30%; animation-delay: 0.9s; }
+        .loading-star:nth-child(5) { top: 50%; left: 50%; animation-delay: 1.2s; transform: translate(-50%, -50%); }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 20px white; }
+        }
+
+        .loading-text {
+            font-size: clamp(24px, 5vw, 36px);
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow), var(--tertiary-glow));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        /* Canvas Background */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Progress Bar */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-glow), var(--tertiary-glow));
+            z-index: 1000;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        /* Music Controls */
+        #music-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--primary-glow);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        /* Chapter Container */
+        .chapter {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .chapter.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chapter-title {
+            font-size: clamp(32px, 6vw, 64px);
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, var(--primary-glow), var(--secondary-glow));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 110, 199, 0.5);
+        }
+
+        /* Chapter 1: The Beginning */
+        #ch1 {
+            background: radial-gradient(circle at 50% 50%, rgba(26, 10, 46, 0.5) 0%, transparent 70%);
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, white, transparent);
+            animation: shoot 3s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes shoot {
+            0% {
+                opacity: 0;
+                transform: translateX(-100px) translateY(-100px);
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(1000px) translateY(1000px);
+            }
+        }
+
+        .name-glow {
+            font-size: clamp(40px, 8vw, 80px);
+            animation: glow 2s ease-in-out infinite;
+            text-shadow: 0 0 20px var(--primary-glow), 0 0 40px var(--primary-glow);
+        }
+
+        @keyframes glow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; text-shadow: 0 0 30px var(--primary-glow), 0 0 60px var(--primary-glow); }
+        }
+
+        /* Chapter 2: First Light */
+        #ch2 {
+            background: linear-gradient(to bottom, #0a0a1f 0%, #1a3a5f 50%, #ff6b35 100%);
+        }
+
+        .planets-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            max-width: 900px;
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .planet {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--primary-glow), var(--secondary-glow));
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 0 30px rgba(255, 110, 199, 0.5);
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .planet:hover, .planet:active {
+            transform: scale(1.2) rotate(10deg);
+            box-shadow: 0 0 50px var(--primary-glow);
+        }
+
+        .planet-tooltip {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .planet:hover .planet-tooltip {
+            opacity: 1;
+        }
+
+        /* Chapter 3: Constellations */
+        #ch3 {
+            background: radial-gradient(circle at 30% 20%, rgba(124, 58, 237, 0.3) 0%, transparent 50%);
+        }
+
+        .constellation-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            margin-top: 40px;
+        }
+
+        .constellation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .constellation-star {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px white;
+        }
+
+        .constellation-star:hover {
+            transform: scale(2);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .constellation-line {
+            position: absolute;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            transform-origin: left center;
+        }
+
+        .love-note {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 110, 199, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 20px;
+            border: 2px solid var(--primary-glow);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .constellation-star:hover ~ .love-note,
+        .constellation-star:active ~ .love-note {
+            opacity: 1;
+        }
+
+        /* Chapter 4: Galaxy of Feelings */
+        #ch4 {
+            background: radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.3) 0%, transparent 60%);
+        }
+
+        .bubbles-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 1000px;
+            margin-top: 40px;
+            perspective: 1000px;
+        }
+
+        .bubble {
+            width: clamp(120px, 20vw, 180px);
+            height: clamp(120px, 20vw, 180px);
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            animation: float 6s ease-in-out infinite;
+            position: relative;
+            padding: 20px;
+            text-align: center;
+            font-size: clamp(12px, 2vw, 16px);
+        }
+
+        .bubble:nth-child(odd) {
+            animation-delay: -3s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(0deg) rotateY(0deg); }
+            50% { transform: translateY(-20px) rotateX(5deg) rotateY(5deg); }
+        }
+
+        .bubble:hover, .bubble:active {
+            transform: scale(1.2) translateY(-10px);
+            box-shadow: 0 0 40px var(--tertiary-glow);
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.3) 0%, rgba(124, 58, 237, 0.3) 100%);
+        }
+
+        .bubble-content {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-style: italic;
+        }
+
+        .bubble:hover .bubble-content,
+        .bubble:active .bubble-content {
+            opacity: 1;
+        }
+
+        /* Chapter 5: Meteor Shower */
+        #ch5 {
+            background: radial-gradient(circle at 70% 30%, rgba(255, 107, 53, 0.3) 0%, transparent 50%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .meteor {
+            position: absolute;
+            width: 3px;
+            height: 150px;
+            background: linear-gradient(to bottom, white, transparent);
+            animation: meteor 2s ease-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes meteor {
+            0% {
+                opacity: 0;
+                transform: translate(-100px, -100px) rotate(-45deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(500px, 500px) rotate(-45deg);
+            }
+        }
+
+        .message-text {
+            font-size: clamp(24px, 5vw, 48px);
+            text-align: center;
+            line-height: 1.5;
+            animation: pulse 2s ease-in-out infinite;
+            text-shadow: 0 0 20px var(--primary-glow);
+            max-width: 90%;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Chapter 6: Final Portal */
+        #ch6 {
+            background: radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.4) 0%, transparent 70%);
+        }
+
+        .portal-container {
+            position: relative;
+            width: clamp(250px, 60vw, 400px);
+            height: clamp(250px, 60vw, 400px);
+            margin-top: 40px;
+        }
+
+        .portal {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-glow), var(--secondary-glow), var(--tertiary-glow));
+            animation: portalSpin 10s linear infinite, portalPulse 3s ease-in-out infinite;
+            box-shadow: 0 0 100px var(--primary-glow), inset 0 0 100px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(50px, 10vw, 100px);
+            transition: transform 0.5s ease;
+        }
+
+        .portal:hover, .portal:active {
+            transform: scale(1.1);
+        }
+
+        @keyframes portalSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes portalPulse {
+            0%, 100% { box-shadow: 0 0 100px var(--primary-glow), inset 0 0 100px rgba(0, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 150px var(--primary-glow), inset 0 0 150px rgba(0, 0, 0, 0.3); }
+        }
+
+        .love-letter {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            background: rgba(26, 10, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border: 3px solid var(--primary-glow);
+            border-radius: 20px;
+            padding: 40px;
+            z-index: 5000;
+            opacity: 0;
+            transition: all 0.5s ease;
+            overflow-y: auto;
+            box-shadow: 0 0 100px var(--primary-glow);
+        }
+
+        .love-letter.visible {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .love-letter h2 {
+            font-size: clamp(24px, 5vw, 36px);
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--primary-glow);
+        }
+
+        .love-letter p {
+            font-size: clamp(14px, 3vw, 18px);
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .close-letter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-glow);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .close-letter:hover {
+            transform: rotate(90deg);
+        }
+
+        /* Secret Star */
+        .secret-star {
+            position: fixed;
+            top: 15%;
+            right: 10%;
+            width: 15px;
+            height: 15px;
+            background: gold;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 100;
+            animation: secretTwinkle 3s ease-in-out infinite;
+            box-shadow: 0 0 15px gold;
+        }
+
+        @keyframes secretTwinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 30px gold; }
+        }
+
+        .secret-star:hover {
+            transform: scale(2);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(10, 10, 31, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--tertiary-glow);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 90%;
+            width: 500px;
+            z-index: 6000;
+            opacity: 0;
+            transition: all 0.5s ease;
+            text-align: center;
+        }
+
+        .modal.visible {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .modal h3 {
+            color: gold;
+            font-size: clamp(20px, 4vw, 28px);
+            margin-bottom: 20px;
+        }
+
+        .modal p {
+            font-size: clamp(14px, 3vw, 18px);
+            line-height: 1.6;
+        }
+
+        .modal button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: var(--tertiary-glow);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--tertiary-glow);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chapter {
+                padding: 40px 15px;
+            }
+
+            .planets-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .planet {
+                width: 120px;
+                height: 120px;
+                font-size: 30px;
+            }
+
+            .constellation-container {
+                height: 300px;
+            }
+
+            .bubbles-container {
+                gap: 15px;
+            }
+
+            .bubble {
+                width: 100px;
+                height: 100px;
+                font-size: 11px;
+                padding: 10px;
+            }
+
+            .love-letter {
+                padding: 25px;
+            }
+
+            #music-controls {
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .control-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-glow);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-glow);
+        }
+    </style>
+</head>
+<body class="allow-cursor">
+    <!-- Custom Cursor -->
+    <div id="custom-cursor"></div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-stars">
+            <div class="loading-star"></div>
+            <div class="loading-star"></div>
+            <div class="loading-star"></div>
+            <div class="loading-star"></div>
+            <div class="loading-star"></div>
+        </div>
+        <div class="loading-text" id="loading-name">Her Name</div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div id="progress-bar"></div>
+
+    <!-- Canvas Background -->
+    <canvas id="starfield"></canvas>
+
+    <!-- Music Controls -->
+    <div id="music-controls">
+        <button class="control-btn" id="music-toggle" title="Toggle Music">🎵</button>
+    </div>
+
+    <!-- Secret Star -->
+    <div class="secret-star" id="secret-star" title="Find me! ✨"></div>
+
+    <!-- Chapter 1: The Beginning -->
+    <section class="chapter" id="ch1">
+        <div class="shooting-star" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
+        <div class="shooting-star" style="top: 40%; left: 30%; animation-delay: 1.5s;"></div>
+        <div class="shooting-star" style="top: 60%; left: 50%; animation-delay: 3s;"></div>
+        
+        <h1 class="chapter-title">The Beginning 🌠</h1>
+        <p class="name-glow" id="her-name">Her Name</p>
+        <p style="margin-top: 20px; font-size: clamp(16px, 3vw, 22px); text-align: center; max-width: 600px;">
+            In the vast cosmos, among billions of stars, one light shone brighter than all...
+        </p>
+    </section>
+
+    <!-- Chapter 2: First Light -->
+    <section class="chapter" id="ch2">
+        <h1 class="chapter-title">First Light ☀️</h1>
+        <p style="margin-bottom: 20px; font-size: clamp(14px, 2.5vw, 18px); text-align: center; max-width: 700px;">
+            Each planet holds a precious memory of us. Click to explore our universe...
+        </p>
+        <div class="planets-container">
+            <div class="planet" data-memory="Our first conversation - I knew instantly you were special">
+                🌍
+                <div class="planet-tooltip">First Words</div>
+            </div>
+            <div class="planet" data-memory="The day you smiled at me - my whole world lit up">
+                🪐
+                <div class="planet-tooltip">That Smile</div>
+            </div>
+            <div class="planet" data-memory="Our first laugh together - music to my soul">
+                🌙
+                <div class="planet-tooltip">First Laugh</div>
+            </div>
+            <div class="planet" data-memory="When I realized I was falling for you - unstoppable">
+                ⭐
+                <div class="planet-tooltip">Falling</div>
+            </div>
+            <div class="planet" data-memory="Every moment with you - infinite treasures">
+                💫
+                <div class="planet-tooltip">Every Moment</div>
+            </div>
+            <div class="planet" data-memory="Our future together - the brightest star ahead">
+                ✨
+                <div class="planet-tooltip">Forever</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chapter 3: Constellations -->
+    <section class="chapter" id="ch3">
+        <h1 class="chapter-title">The Constellations ✨</h1>
+        <p style="margin-bottom: 20px; font-size: clamp(14px, 2.5vw, 18px); text-align: center;">
+            The stars have aligned to spell our destiny. Hover to reveal their secrets...
+        </p>
+        <div class="constellation-container">
+            <div class="constellation" id="constellation-love">
+                <!-- Stars will be added via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Chapter 4: Galaxy of Feelings -->
+    <section class="chapter" id="ch4">
+        <h1 class="chapter-title">Galaxy of Feelings ❤️</h1>
+        <p style="margin-bottom: 20px; font-size: clamp(14px, 2.5vw, 18px); text-align: center; max-width: 700px;">
+            Each bubble contains a piece of my heart. Touch them to feel my emotions...
+        </p>
+        <div class="bubbles-container">
+            <div class="bubble">
+                <span class="bubble-content">You make my heart race every single day</span>
+            </div>
+            <div class="bubble">
+                <span class="bubble-content">Your laughter is my favorite sound in the universe</span>
+            </div>
+            <div class="bubble">
+                <span class="bubble-content">I think about you in every quiet moment</span>
+            </div>
+            <div class="bubble">
+                <span class="bubble-content">You're the reason I believe in magic</span>
+            </div>
+            <div class="bubble">
+                <span class="bubble-content">Every day with you is my favorite day</span>
+            </div>
+            <div class="bubble">
+                <span class="bubble-content">You are my home, my peace, my everything</span>
+            </div>
+            <div class="bubble">
+                <span class="bubble-content">I fall deeper in love with you every moment</span>
+            </div>
+            <div class="bubble">
+                <span class="bubble-content">You are the best thing that ever happened to me</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chapter 5: Meteor Shower -->
+    <section class="chapter" id="ch5">
+        <div class="meteor" style="top: 10%; left: 20%; animation-delay: 0s;"></div>
+        <div class="meteor" style="top: 30%; left: 40%; animation-delay: 0.5s;"></div>
+        <div class="meteor" style="top: 50%; left: 60%; animation-delay: 1s;"></div>
+        <div class="meteor" style="top: 20%; left: 80%; animation-delay: 1.5s;"></div>
+        <div class="meteor" style="top: 70%; left: 30%; animation-delay: 2s;"></div>
+        
+        <h1 class="chapter-title">Meteor Shower 💥</h1>
+        <p class="message-text">
+            ✨ You are my Universe ✨
+        </p>
+        <p style="margin-top: 30px; font-size: clamp(16px, 3vw, 22px); text-align: center; max-width: 600px;">
+            And in this infinite cosmos, you are the center of everything that matters.
+        </p>
+    </section>
+
+    <!-- Chapter 6: Final Portal -->
+    <section class="chapter" id="ch6">
+        <h1 class="chapter-title">Final Portal 🌌</h1>
+        <p style="margin-bottom: 20px; font-size: clamp(14px, 2.5vw, 18px); text-align: center; max-width: 600px;">
+            Step through the portal... there's something waiting for you on the other side.
+        </p>
+        <div class="portal-container">
+            <div class="portal" id="portal">
+                💝
+            </div>
+        </div>
+        <p style="margin-top: 30px; font-size: clamp(14px, 2.5vw, 18px); font-style: italic; text-align: center;">
+            Click to enter...
+        </p>
+    </section>
+
+    <!-- Love Letter Modal -->
+    <div class="love-letter" id="love-letter">
+        <button class="close-letter" id="close-letter">×</button>
+        <h2>💌 A Letter From My Heart</h2>
+        <div id="letter-content">
+            <p>My Dearest,</p>
+            <p>I created this universe for you because words alone could never capture what you mean to me.</p>
+            <p>You are the shooting star I wished upon. You are the sunrise that brings color to my world. You are every constellation spelling out "forever". You are the feelings that overflow from my heart. You are the meteor that changed my entire trajectory. And you are the portal to a future I can't wait to live.</p>
+            <p>Every pixel here, every animation, every star - I placed them thinking of you. This isn't just a website. It's a reflection of how infinitely vast my love for you truly is.</p>
+            <p>You make the ordinary feel magical. You make every moment worth remembering. You make me believe that love can be as infinite as the universe itself.</p>
+            <p>Thank you for being you. Thank you for being mine. Thank you for being the most beautiful part of my universe.</p>
+            <p style="text-align: center; margin-top: 30px; font-size: 24px; color: var(--primary-glow);">
+                I love you to the stars and back ✨
+            </p>
+            <p style="text-align: right; margin-top: 20px; font-style: italic;">
+                Forever yours,<br>
+                [Your Name]
+            </p>
+        </div>
+    </div>
+
+    <!-- Secret Star Modal -->
+    <div class="modal" id="secret-modal">
+        <h3>✨ You Found The Secret Star! ✨</h3>
+        <p>You have the most beautiful curiosity, just like everything else about you. Here's a secret just for us:</p>
+        <p style="margin-top: 20px; font-style: italic; color: var(--primary-glow);">
+            "In a universe of 8 billion people, my heart chose you. And it will choose you in every lifetime, in every universe, forever."
+        </p>
+        <button id="close-secret">Close</button>
+    </div>
+
+    <!-- Audio Elements (Hidden) -->
+    <audio id="bg-music" loop>
+        <!-- Add your background music URL here -->
+        <!-- <source src="your-music.mp3" type="audio/mpeg"> -->
+    </audio>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const CONFIG = {
+            herName: "Her Name", // CHANGE THIS!
+            yourName: "[Your Name]", // CHANGE THIS!
+            // Add your audio files here:
+            audioFiles: {
+                whisper: null, // URL to whisper audio: "whisper.mp3"
+                bgMusic: null, // URL to background music: "ambient.mp3"
+            }
+        };
+
+        // ==================== INITIALIZATION ====================
+        let musicPlaying = false;
+        let scrollProgress = 0;
+
+        // Update names
+        document.getElementById('loading-name').textContent = CONFIG.herName;
+        document.getElementById('her-name').textContent = CONFIG.herName;
+        document.getElementById('letter-content').innerHTML = document.getElementById('letter-content').innerHTML.replace('[Your Name]', CONFIG.yourName);
+
+        // ==================== LOADING SCREEN ====================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                initExperience();
+            }, 3000);
+        });
+
+        function initExperience() {
+            // Play whisper if available
+            if (CONFIG.audioFiles.whisper) {
+                const whisper = new Audio(CONFIG.audioFiles.whisper);
+                whisper.play().catch(e => console.log('Audio autoplay prevented'));
+            }
+            
+            // Start background music if available
+            if (CONFIG.audioFiles.bgMusic) {
+                const bgMusic = document.getElementById('bg-music');
+                bgMusic.src = CONFIG.audioFiles.bgMusic;
+                bgMusic.play().then(() => {
+                    musicPlaying = true;
+                }).catch(e => console.log('Music autoplay prevented'));
+            }
+        }
+
+        // ==================== CUSTOM CURSOR ====================
+        const cursor = document.getElementById('custom-cursor');
+        let cursorX = 0, cursorY = 0;
+
+        if (window.innerWidth > 768) {
+            document.body.classList.remove('allow-cursor');
+            
+            document.addEventListener('mousemove', (e) => {
+                cursorX = e.clientX;
+                cursorY = e.clientY;
+                cursor.style.left = cursorX + 'px';
+                cursor.style.top = cursorY + 'px';
+
+                // Create trail
+                if (Math.random() > 0.7) {
+                    const trail = document.createElement('div');
+                    trail.className = 'cursor-trail';
+                    trail.style.left = cursorX + 'px';
+                    trail.style.top = cursorY + 'px';
+                    document.body.appendChild(trail);
+                    setTimeout(() => trail.remove(), 1000);
+                }
+            });
+        }
+
+        // ==================== STARFIELD CANVAS ====================
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = document.documentElement.scrollHeight;
+
+        const stars = [];
+        const starCount = window.innerWidth > 768 ? 500 : 200;
+
+        for (let i = 0; i < starCount; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2,
+                alpha: Math.random(),
+                speed: Math.random() * 0.5
+            });
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+                ctx.fill();
+
+                star.alpha += star.speed * 0.01;
+                if (star.alpha > 1) star.speed *= -1;
+                if (star.alpha < 0) star.speed *= -1;
+            });
+
+            requestAnimationFrame(animateStars);
+        }
+
+        animateStars();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = document.documentElement.scrollHeight;
+        });
+
+        // ==================== SCROLL PROGRESS ====================
+        window.addEventListener('scroll', () => {
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            scrollProgress = (window.scrollY / scrollHeight) * 100;
+            document.getElementById('progress-bar').style.width = scrollProgress + '%';
+
+            // Reveal chapters
+            document.querySelectorAll('.chapter').forEach(chapter => {
+                const rect = chapter.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.75) {
+                    chapter.classList.add('visible');
+                }
+            });
+        });
+
+        // Trigger initial check
+        window.dispatchEvent(new Event('scroll'));
+
+        // ==================== MUSIC CONTROLS ====================
+        document.getElementById('music-toggle').addEventListener('click', () => {
+            const bgMusic = document.getElementById('bg-music');
+            const btn = document.getElementById('music-toggle');
+            
+            if (musicPlaying) {
+                bgMusic.pause();
+                btn.textContent = '🔇';
+                musicPlaying = false;
+            } else {
+                bgMusic.play();
+                btn.textContent = '🎵';
+                musicPlaying = true;
+            }
+        });
+
+        // ==================== CHAPTER 2: PLANETS ====================
+        document.querySelectorAll('.planet').forEach(planet => {
+            planet.addEventListener('click', function() {
+                const memory = this.getAttribute('data-memory');
+                alert('💫 ' + memory);
+                // You can replace alert with a nicer modal if desired
+            });
+        });
+
+        // ==================== CHAPTER 3: CONSTELLATIONS ====================
+        const constellationContainer = document.getElementById('constellation-love');
+        
+        // Create LOVE constellation
+        const lovePattern = [
+            // L
+            {x: 10, y: 10}, {x: 10, y: 40}, {x: 10, y: 70}, {x: 40, y: 70},
+            // O
+            {x: 80, y: 10}, {x: 110, y: 10}, {x: 110, y: 40}, {x: 110, y: 70}, {x: 80, y: 70}, {x: 80, y: 40},
+            // V
+            {x: 150, y: 10}, {x: 170, y: 70}, {x: 190, y: 10},
+            // E
+            {x: 230, y: 10}, {x: 230, y: 40}, {x: 230, y: 70}, {x: 260, y: 10}, {x: 255, y: 40}, {x: 260, y: 70}
+        ];
+
+        lovePattern.forEach((pos, i) => {
+            const star = document.createElement('div');
+            star.className = 'constellation-star';
+            star.style.left = (pos.x / 270 * 100) + '%';
+            star.style.top = (pos.y / 80 * 100) + '%';
+            star.setAttribute('data-note', 'Every star in this constellation represents a moment I fell deeper in love with you ✨');
+            constellationContainer.appendChild(star);
+
+            // Connect stars with lines
+            if (i > 0) {
+                const prevPos = lovePattern[i - 1];
+                const line = document.createElement('div');
+                line.className = 'constellation-line';
+                const length = Math.sqrt(Math.pow(pos.x - prevPos.x, 2) + Math.pow(pos.y - prevPos.y, 2));
+                const angle = Math.atan2(pos.y - prevPos.y, pos.x - prevPos.x) * 180 / Math.PI;
+                line.style.width = (length / 270 * 100) + '%';
+                line.style.left = (prevPos.x / 270 * 100) + '%';
+                line.style.top = (prevPos.y / 80 * 100) + '%';
+                line.style.transform = `rotate(${angle}deg)`;
+                constellationContainer.appendChild(line);
+            }
+        });
+
+        // Add love note
+        const loveNote = document.createElement('div');
+        loveNote.className = 'love-note';
+        loveNote.textContent = 'Every star represents a moment I fell deeper in love with you ✨';
+        constellationContainer.appendChild(loveNote);
+
+        // Show note on any star hover
+        document.querySelectorAll('.constellation-star').forEach(star => {
+            star.addEventListener('mouseenter', () => {
+                loveNote.style.opacity = '1';
+            });
+            star.addEventListener('mouseleave', () => {
+                loveNote.style.opacity = '0';
+            });
+            // Mobile support
+            star.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                loveNote.style.opacity = '1';
+                setTimeout(() => loveNote.style.opacity = '0', 3000);
+            });
+        });
+
+        // ==================== CHAPTER 6: PORTAL ====================
+        const portal = document.getElementById('portal');
+        const loveLetter = document.getElementById('love-letter');
+        const closeLetter = document.getElementById('close-letter');
+
+        portal.addEventListener('click', () => {
+            loveLetter.classList.add('visible');
+            // Type effect for letter
+            const content = document.getElementById('letter-content');
+            const originalHTML = content.innerHTML;
+            content.innerHTML = '';
+            let i = 0;
+            
+            const typeInterval = setInterval(() => {
+                if (i < originalHTML.length) {
+                    content.innerHTML += originalHTML.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typeInterval);
+                }
+            }, 20);
+        });
+
+        closeLetter.addEventListener('click', () => {
+            loveLetter.classList.remove('visible');
+        });
+
+        // ==================== SECRET STAR ====================
+        const secretStar = document.getElementById('secret-star');
+        const secretModal = document.getElementById('secret-modal');
+        const closeSecret = document.getElementById('close-secret');
+
+        secretStar.addEventListener('click', () => {
+            secretModal.classList.add('visible');
+            secretStar.style.display = 'none';
+            
+            // Play special sound if available
+            // const secretSound = new Audio('secret.mp3');
+            // secretSound.play();
+        });
+
+        closeSecret.addEventListener('click', () => {
+            secretModal.classList.remove('visible');
+        });
+
+        // ==================== RESPONSIVE CANVAS ====================
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                canvas.width = window.innerWidth;
+                canvas.height = document.documentElement.scrollHeight;
+            }, 250);
+        });
+
+        // ==================== PREVENT CONTEXT MENU ON LONG PRESS ====================
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.classList.contains('planet') || 
+                e.target.classList.contains('bubble') ||
+                e.target.classList.contains('portal')) {
+                e.preventDefault();
+            }
+        });
+
+        // ==================== SMOOTH SCROLL ====================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // ==================== CONSOLE MESSAGE ====================
+        console.log('%c✨ Made with infinite love ✨', 'font-size: 20px; color: #ff6ec7; font-weight: bold;');
+        console.log('%cFor the most beautiful person in my universe 💫', 'font-size: 14px; color: #7c3aed;');
+    </script>
+</body>
+</html>
