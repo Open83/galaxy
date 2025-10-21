@@ -527,6 +527,23 @@
             max-width: 100%;
             height: auto;
         }
+
+        /* Secret Trigger Hint Animation */
+        #secretTrigger {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 30px;
+            height: 30px;
+            opacity: 0;
+            z-index: 2000;
+            animation: subtlePulse 4s infinite;
+        }
+
+        @keyframes subtlePulse {
+            0%, 80%, 100% { opacity: 0; }
+            90% { opacity: 0.2; background: rgba(255, 255, 255, 0.3); }
+        }
     </style>
 </head>
 <body>
@@ -968,8 +985,11 @@ aur main yeh zindagi sirf tumhare saath jeena chahta hoon` }
                 title: 'The Constellation Room',
                 content: `
                     <div class="constellation-container">
-                        <div id="secretTrigger" style="position: absolute; top: 5%; left: 5%; width: 20px; height: 20px; opacity: 0; z-index: 1000;"></div>
+                        <div id="secretTrigger" style="position: absolute; top: 5%; left: 5%; width: 30px; height: 30px; opacity: 0; z-index: 2000;"></div>
                         <div class="star-word">FOREVER</div>
+                        <div class="cosmic-text" style="font-size: clamp(0.8rem, 2.5vw, 1rem); opacity: 0.7; margin-top: 20px;">
+                            Look to the stars in the corner of the universe for a hidden key...
+                        </div>
                     </div>
                 `,
                 memories: []
@@ -1046,30 +1066,33 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
             }
 
             // Ensure trigger area is large enough
-            secretTrigger.style.width = '20px';
-            secretTrigger.style.height = '20px';
+            secretTrigger.style.width = '30px';
+            secretTrigger.style.height = '30px';
+            secretTrigger.style.zIndex = '2000';
 
             const handleTap = (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 const now = Date.now();
+                console.log('Tap detected:', tapTimes.length + 1);
                 tapTimes.push(now);
-                tapTimes = tapTimes.filter(t => now - t < 3000); // Extended to 3 seconds
+                tapTimes = tapTimes.filter(t => now - t < 5000);
 
                 // Provide subtle feedback
-                secretTrigger.style.background = 'rgba(255, 255, 255, 0.2)';
+                secretTrigger.style.background = 'rgba(255, 255, 255, 0.3)';
                 setTimeout(() => {
                     secretTrigger.style.background = 'transparent';
-                }, 100);
+                }, 150);
 
                 if (tapTimes.length >= 7) {
+                    console.log('Secret trigger activated!');
                     if (navigator.vibrate) {
                         navigator.vibrate(200);
                     } else {
-                        // Fallback for non-vibrating devices
-                        secretTrigger.style.background = 'rgba(255, 255, 255, 0.5)';
+                        secretTrigger.style.background = 'rgba(255, 255, 255, 0.6)';
                         setTimeout(() => {
                             secretTrigger.style.background = 'transparent';
-                        }, 300);
+                        }, 400);
                     }
                     isFourthPIN = true;
                     isThirdPIN = false;
@@ -1083,7 +1106,7 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
             };
 
             secretTrigger.addEventListener('touchstart', handleTap, { passive: false });
-            secretTrigger.addEventListener('click', handleTap); // Added for desktop support
+            secretTrigger.addEventListener('click', handleTap);
         }
 
         function showMemory(memory) {
@@ -1200,7 +1223,7 @@ bina kisi shart bina kisi wajah ke bas tum 🤍
             let i = 0;
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = message;
-            const text = tempDiv.textContent; // Use textContent for typing
+            const text = tempDiv.textContent;
             
             function typeMessage() {
                 if (i < text.length) {
@@ -1208,7 +1231,6 @@ bina kisi shart bina kisi wajah ke bas tum 🤍
                     i++;
                     setTimeout(typeMessage, 30);
                 } else {
-                    // After typing, wrap the white hearts
                     finalMsg.innerHTML = finalMsg.innerHTML.replace(/🤍/g, '<span class="white-heart">🤍</span>');
                     attachLongPressListeners();
                 }
@@ -1307,6 +1329,7 @@ bina kisi shart bina kisi wajah ke bas tum 🤍
         }
 
         function switchScene(from, to) {
+            console.log(`Switching from ${from} to ${to}`);
             document.getElementById(from).classList.remove('active');
             setTimeout(() => {
                 document.getElementById(to).classList.add('active');
