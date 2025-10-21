@@ -425,6 +425,83 @@
                 font-size: 0.75rem;
             }
         }
+
+        /* White Heart Styles */
+        .white-heart {
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .white-heart.glowing {
+            animation: glow 1s infinite alternate;
+            text-shadow: 0 0 10px #fff;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px #fff; }
+            100% { text-shadow: 0 0 20px #fff, 0 0 30px #ff6b9d; }
+        }
+
+        /* Gallery Scene */
+        #galleryScene {
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .gallery-container {
+            position: relative;
+            width: min(100%, 540px);
+            height: min(100vh - 100px, 960px);
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .slides img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            object-fit: contain;
+        }
+
+        .slides img.active {
+            opacity: 1;
+        }
+
+        .gallery-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .gallery-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: #fff;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .gallery-btn:active {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0.97);
+        }
+
+        @media (hover: hover) {
+            .gallery-btn:hover {
+                background: rgba(255, 255, 255, 0.4);
+                transform: scale(1.03);
+            }
+        }
     </style>
 </head>
 <body>
@@ -437,7 +514,7 @@
                 🌌 Yeh universe locked hai..…<br>
                 Sirf wahi jaa sakta hai jiska naam taarein likh chuke hain.
             </div>
-            <div class="pin-display" id="pinDisplay">••••</div>
+            <div class="pin-display" id="pinDisplay">○○○○</div>
             <div class="pin-pad" id="pinPad"></div>
         </div>
     </div>
@@ -459,6 +536,28 @@
         </div>
     </div>
 
+    <!-- GALLERY SCENE -->
+    <div id="galleryScene" class="scene">
+        <div class="gallery-container">
+            <div class="slides">
+                <img src="image/1.jpg" alt="Slide 1">
+                <img src="image/2.jpg" alt="Slide 2">
+                <img src="image/3.jpg" alt="Slide 3">
+                <img src="image/4.jpg" alt="Slide 4">
+                <img src="image/5.jpg" alt="Slide 5">
+                <img src="image/6.jpg" alt="Slide 6">
+                <img src="image/7.jpg" alt="Slide 7">
+                <img src="image/8.jpg" alt="Slide 8">
+                <img src="image/9.jpg" alt="Slide 9">
+                <img src="image/10.jpg" alt="Slide 10">
+            </div>
+            <div class="gallery-controls">
+                <button class="gallery-btn" id="prevGalleryBtn">Prev</button>
+                <button class="gallery-btn" id="nextGalleryBtn">Next</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL -->
     <div class="modal" id="modal">
         <div class="modal-inner">
@@ -472,6 +571,7 @@
         const CONFIG = {
             mainPIN: '4827',
             secretPIN: '2322',
+            thirdPIN: '1234', // Assumed third PIN; change as needed
             herName: 'Saraaaaaa♥️'
         };
 
@@ -565,6 +665,7 @@
         // ===== PIN SYSTEM =====
         let enteredPIN = '';
         let isSecretPIN = false;
+        let isThirdPIN = false;
         const pinDisplay = document.getElementById('pinDisplay');
         const pinPad = document.getElementById('pinPad');
 
@@ -619,17 +720,26 @@
 
         function clearPIN() {
             enteredPIN = '';
-            pinDisplay.textContent = '●●●●';
+            pinDisplay.textContent = '○○○○';
         }
 
         function checkPIN() {
-            const correctPIN = isSecretPIN ? CONFIG.secretPIN : CONFIG.mainPIN;
+            let correctPIN;
+            if (isThirdPIN) {
+                correctPIN = CONFIG.thirdPIN;
+            } else if (isSecretPIN) {
+                correctPIN = CONFIG.secretPIN;
+            } else {
+                correctPIN = CONFIG.mainPIN;
+            }
             
             if (enteredPIN === correctPIN) {
                 playSound('success');
                 nebulaColor = [255, 105, 180];
                 
-                if (isSecretPIN) {
+                if (isThirdPIN) {
+                    setTimeout(() => showGallery(), 1000);
+                } else if (isSecretPIN) {
                     setTimeout(() => showFinalReveal(), 1000);
                 } else {
                     setTimeout(() => unlockUniverse(), 1000);
@@ -949,7 +1059,7 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
             initAudio();
             isSecretPIN = true;
             enteredPIN = '';
-            pinDisplay.textContent = '●●●●';
+            pinDisplay.textContent = '○○○○';
             document.querySelector('.cosmic-text').innerHTML = '🔐 One more secret remains...<br>Only the deepest connection knows this key.';
             document.getElementById('hiddenStar').style.display = 'none';
             switchScene('galaxyScene', 'pinScene');
@@ -997,17 +1107,85 @@ bina kisi shart bina kisi wajah ke bas tum 🤍
             let i = 0;
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = message;
-            const text = tempDiv.innerHTML;
+            const text = tempDiv.textContent; // Use textContent for typing
             
             function typeMessage() {
                 if (i < text.length) {
                     finalMsg.innerHTML += text.charAt(i);
                     i++;
                     setTimeout(typeMessage, 30);
+                } else {
+                    // After typing, wrap the white hearts
+                    finalMsg.innerHTML = finalMsg.innerHTML.replace(/🤍/g, '<span class="white-heart">🤍</span>');
+                    attachLongPressListeners();
                 }
             }
             
             typeMessage();
+        }
+
+        function attachLongPressListeners() {
+            const hearts = document.querySelectorAll('.white-heart');
+            hearts.forEach(heart => {
+                let pressTimer;
+                let glowTimer;
+
+                const startPress = (e) => {
+                    e.preventDefault();
+                    glowTimer = setTimeout(() => {
+                        heart.classList.add('glowing');
+                    }, 2000);
+                    pressTimer = setTimeout(() => {
+                        if (navigator.vibrate) navigator.vibrate(200);
+                        triggerThirdPIN();
+                    }, 3000);
+                };
+
+                const endPress = () => {
+                    clearTimeout(pressTimer);
+                    clearTimeout(glowTimer);
+                    heart.classList.remove('glowing');
+                };
+
+                heart.addEventListener('touchstart', startPress, {passive: true});
+                heart.addEventListener('touchend', endPress);
+                heart.addEventListener('touchcancel', endPress);
+                heart.addEventListener('mousedown', startPress);
+                heart.addEventListener('mouseup', endPress);
+                heart.addEventListener('mouseleave', endPress);
+            });
+        }
+
+        function triggerThirdPIN() {
+            isThirdPIN = true;
+            isSecretPIN = false;
+            enteredPIN = '';
+            pinDisplay.textContent = '○○○○';
+            document.querySelector('.cosmic-text').innerHTML = '🔐 The deepest secret awaits...<br>Enter the key of pure love.';
+            switchScene('finalScene', 'pinScene');
+        }
+
+        function showGallery() {
+            switchScene('pinScene', 'galleryScene');
+            initGallery();
+        }
+
+        let currentSlide = 0;
+        function initGallery() {
+            const slides = document.querySelectorAll('.slides img');
+            const prevBtn = document.getElementById('prevGalleryBtn');
+            const nextBtn = document.getElementById('nextGalleryBtn');
+
+            function showSlide(n) {
+                slides.forEach(s => s.classList.remove('active'));
+                currentSlide = (n + slides.length) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+
+            prevBtn.onclick = () => showSlide(currentSlide - 1);
+            nextBtn.onclick = () => showSlide(currentSlide + 1);
+
+            showSlide(0);
         }
 
         function switchScene(from, to) {
