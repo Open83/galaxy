@@ -968,7 +968,7 @@ aur main yeh zindagi sirf tumhare saath jeena chahta hoon` }
                 title: 'The Constellation Room',
                 content: `
                     <div class="constellation-container">
-                        <div id="secretTrigger" style="position: absolute; top: 5%; left: 5%; width: 2px; height: 2px; opacity: 0; z-index: 1000;"></div>
+                        <div id="secretTrigger" style="position: absolute; top: 5%; left: 5%; width: 20px; height: 20px; opacity: 0; z-index: 1000;"></div>
                         <div class="star-word">FOREVER</div>
                     </div>
                 `,
@@ -1040,25 +1040,50 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
         function initSecretTrigger() {
             let tapTimes = [];
             const secretTrigger = document.getElementById('secretTrigger');
-            if (secretTrigger) {
-                secretTrigger.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    const now = Date.now();
-                    tapTimes.push(now);
-                    tapTimes = tapTimes.filter(t => now - t < 2000);
-                    if (tapTimes.length >= 7) {
-                        if (navigator.vibrate) navigator.vibrate(200);
-                        isFourthPIN = true;
-                        isThirdPIN = false;
-                        isSecretPIN = false;
-                        enteredPIN = '';
-                        pinDisplay.textContent = '○○○○';
-                        document.querySelector('.cosmic-text').innerHTML = '🔐 The ultimate secret unlocked...<br>Enter the eternal key.';
-                        switchScene('galaxyScene', 'pinScene');
-                        tapTimes = [];
-                    }
-                });
+            if (!secretTrigger) {
+                console.warn('Secret trigger element not found!');
+                return;
             }
+
+            // Ensure trigger area is large enough
+            secretTrigger.style.width = '20px';
+            secretTrigger.style.height = '20px';
+
+            const handleTap = (e) => {
+                e.preventDefault();
+                const now = Date.now();
+                tapTimes.push(now);
+                tapTimes = tapTimes.filter(t => now - t < 3000); // Extended to 3 seconds
+
+                // Provide subtle feedback
+                secretTrigger.style.background = 'rgba(255, 255, 255, 0.2)';
+                setTimeout(() => {
+                    secretTrigger.style.background = 'transparent';
+                }, 100);
+
+                if (tapTimes.length >= 7) {
+                    if (navigator.vibrate) {
+                        navigator.vibrate(200);
+                    } else {
+                        // Fallback for non-vibrating devices
+                        secretTrigger.style.background = 'rgba(255, 255, 255, 0.5)';
+                        setTimeout(() => {
+                            secretTrigger.style.background = 'transparent';
+                        }, 300);
+                    }
+                    isFourthPIN = true;
+                    isThirdPIN = false;
+                    isSecretPIN = false;
+                    enteredPIN = '';
+                    pinDisplay.textContent = '○○○○';
+                    document.querySelector('.cosmic-text').innerHTML = '🔐 The ultimate secret unlocked...<br>Enter the eternal key.';
+                    switchScene('galaxyScene', 'pinScene');
+                    tapTimes = [];
+                }
+            };
+
+            secretTrigger.addEventListener('touchstart', handleTap, { passive: false });
+            secretTrigger.addEventListener('click', handleTap); // Added for desktop support
         }
 
         function showMemory(memory) {
