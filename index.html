@@ -479,6 +479,12 @@
             transform: translateX(-50%);
             display: flex;
             gap: 20px;
+            align-items: center;
+        }
+
+        .gallery-counter {
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            opacity: 0.8;
         }
 
         .gallery-btn {
@@ -501,6 +507,25 @@
                 background: rgba(255, 255, 255, 0.4);
                 transform: scale(1.03);
             }
+        }
+
+        /* Video Scene */
+        #videoScene {
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .video-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100%;
+        }
+
+        video {
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
@@ -553,8 +578,19 @@
             </div>
             <div class="gallery-controls">
                 <button class="gallery-btn" id="prevGalleryBtn">Prev</button>
+                <span class="gallery-counter" id="galleryCounter">1/10</span>
                 <button class="gallery-btn" id="nextGalleryBtn">Next</button>
             </div>
+        </div>
+    </div>
+
+    <!-- VIDEO SCENE -->
+    <div id="videoScene" class="scene">
+        <div class="video-container">
+            <video id="messageVideo" width="540" height="960" controls>
+                <source src="video/message.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
         </div>
     </div>
 
@@ -571,7 +607,8 @@
         const CONFIG = {
             mainPIN: '4827',
             secretPIN: '2322',
-            thirdPIN: '3993', // Assumed third PIN; change as needed
+            thirdPIN: '1409',
+            fourthPIN: '2509',
             herName: 'Saraaaaaa♥️'
         };
 
@@ -666,6 +703,7 @@
         let enteredPIN = '';
         let isSecretPIN = false;
         let isThirdPIN = false;
+        let isFourthPIN = false;
         const pinDisplay = document.getElementById('pinDisplay');
         const pinPad = document.getElementById('pinPad');
 
@@ -725,7 +763,9 @@
 
         function checkPIN() {
             let correctPIN;
-            if (isThirdPIN) {
+            if (isFourthPIN) {
+                correctPIN = CONFIG.fourthPIN;
+            } else if (isThirdPIN) {
                 correctPIN = CONFIG.thirdPIN;
             } else if (isSecretPIN) {
                 correctPIN = CONFIG.secretPIN;
@@ -737,7 +777,9 @@
                 playSound('success');
                 nebulaColor = [255, 105, 180];
                 
-                if (isThirdPIN) {
+                if (isFourthPIN) {
+                    setTimeout(() => showVideoScene(), 1000);
+                } else if (isThirdPIN) {
                     setTimeout(() => showGallery(), 1000);
                 } else if (isSecretPIN) {
                     setTimeout(() => showFinalReveal(), 1000);
@@ -926,6 +968,7 @@ aur main yeh zindagi sirf tumhare saath jeena chahta hoon` }
                 title: 'The Constellation Room',
                 content: `
                     <div class="constellation-container">
+                        <div id="secretTrigger" style="position: absolute; top: 5%; left: 5%; width: 2px; height: 2px; opacity: 0; z-index: 1000;"></div>
                         <div class="star-word">FOREVER</div>
                     </div>
                 `,
@@ -983,6 +1026,7 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
 
             if (index === 2) {
                 animateConstellation();
+                initSecretTrigger();
             }
 
             if (index === 3) {
@@ -990,6 +1034,30 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
                 setTimeout(() => {
                     document.getElementById('hiddenStar').style.display = 'flex';
                 }, 2000);
+            }
+        }
+
+        function initSecretTrigger() {
+            let tapTimes = [];
+            const secretTrigger = document.getElementById('secretTrigger');
+            if (secretTrigger) {
+                secretTrigger.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const now = Date.now();
+                    tapTimes.push(now);
+                    tapTimes = tapTimes.filter(t => now - t < 2000);
+                    if (tapTimes.length >= 7) {
+                        if (navigator.vibrate) navigator.vibrate(200);
+                        isFourthPIN = true;
+                        isThirdPIN = false;
+                        isSecretPIN = false;
+                        enteredPIN = '';
+                        pinDisplay.textContent = '○○○○';
+                        document.querySelector('.cosmic-text').innerHTML = '🔐 The ultimate secret unlocked...<br>Enter the eternal key.';
+                        switchScene('galaxyScene', 'pinScene');
+                        tapTimes = [];
+                    }
+                });
             }
         }
 
@@ -1159,6 +1227,7 @@ bina kisi shart bina kisi wajah ke bas tum 🤍
         function triggerThirdPIN() {
             isThirdPIN = true;
             isSecretPIN = false;
+            isFourthPIN = false;
             enteredPIN = '';
             pinDisplay.textContent = '○○○○';
             document.querySelector('.cosmic-text').innerHTML = '🔐 The deepest secret awaits...<br>Enter the key of pure love.';
@@ -1175,17 +1244,41 @@ bina kisi shart bina kisi wajah ke bas tum 🤍
             const slides = document.querySelectorAll('.slides img');
             const prevBtn = document.getElementById('prevGalleryBtn');
             const nextBtn = document.getElementById('nextGalleryBtn');
+            const counter = document.getElementById('galleryCounter');
+            const galleryContainer = document.querySelector('.gallery-container');
+            let touchStartX = 0;
+            let touchEndX = 0;
 
             function showSlide(n) {
                 slides.forEach(s => s.classList.remove('active'));
                 currentSlide = (n + slides.length) % slides.length;
                 slides[currentSlide].classList.add('active');
+                counter.textContent = `${currentSlide + 1}/${slides.length}`;
             }
 
             prevBtn.onclick = () => showSlide(currentSlide - 1);
             nextBtn.onclick = () => showSlide(currentSlide + 1);
 
+            galleryContainer.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, {passive: true});
+
+            galleryContainer.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                if (touchStartX - touchEndX > 50) {
+                    showSlide(currentSlide + 1);
+                } else if (touchEndX - touchStartX > 50) {
+                    showSlide(currentSlide - 1);
+                }
+            }, {passive: true});
+
             showSlide(0);
+        }
+
+        function showVideoScene() {
+            switchScene('pinScene', 'videoScene');
+            const video = document.getElementById('messageVideo');
+            video.play();
         }
 
         function switchScene(from, to) {
