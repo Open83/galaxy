@@ -20,7 +20,7 @@
             position: fixed;
             width: 100%;
             height: 100vh;
-            touch-action: manipulation;
+            touch-action: pan-y pinch-zoom;
         }
 
         .scene {
@@ -36,6 +36,7 @@
             transition: opacity 1s ease;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
         }
 
         .scene.active {
@@ -265,6 +266,7 @@
             box-shadow: 0 0 50px rgba(255, 255, 255, 0.3);
             position: relative;
             animation: modalAppear 0.4s ease-out;
+            touch-action: pan-y;
         }
 
         @keyframes modalAppear {
@@ -473,10 +475,15 @@
             herName: 'My Love'
         };
 
-        // ===== PREVENT ZOOM & SCROLL ISSUES =====
-        document.addEventListener('touchmove', (e) => {
-            if (e.scale !== 1) e.preventDefault();
-        }, { passive: false });
+        // ===== PREVENT ZOOM ONLY (Allow scrolling) =====
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
 
         // ===== STAR CANVAS ANIMATION =====
         const canvas = document.getElementById('stars');
@@ -687,9 +694,9 @@ Uss din mujhe samajh aaya tha ke tum meri aadat nahi, meri zarurat ho. Tum mere 
 
 Aur tab se aaj tak kuch bhi waisa nahi raha. Tumhare bina waqt guzarta toh hai par mehsoos nahi hota. Tum meri soch, meri rooh, meri har dua ka sabse gehra hissa ban chuki ho. Tum meri zindagi mein kisi khaali jagah ko bharne ke liye nahi aayi thi, tum meri poori zindagi ban gayi ho.
 
-Main maanta hoon main kabhi galat tha. Maine kuch pal aise bana diye jo tum deserve nahi karti thi aur uss baat ka ehsaaasss mere dil se kabhi kam nahi hoga. Lekin uss din ke baad, uss milan ke baad, ek cheez kabhi nahi badli... mera pyaar tumse.
+Main maanta hoon main kabhi galat tha. Maine kuch pal aise bana diye jo tum deserve nahi karti thi aur uss baat ka bojh mere dil se kabhi kam nahi hoga. Lekin uss din ke baad, uss milan ke baad, ek cheez kabhi nahi badli... mera pyaar tumse.
 
-Saraaaaaaaa♥️ uss din samundar ke kinaare jo lamha humne mehsoos kiya tha, vo meri zindagi ka sabse khoobsurat pal tha. Uss pal mein main sirf tumhara Asif ban gaya tha, jo tumhari aankhon mein apna ghar dekhta hai, tumhari muskaan mein jeeta hai aur tumhari baahon mein apni poori zindagi mehsoos karta hai.
+Sara ♥️ uss din samundar ke kinaare jo lamha humne mehsoos kiya tha, vo meri zindagi ka sabse khoobsurat pal tha. Uss pal mein main sirf tumhara Asif ban gaya tha, jo tumhari aankhon mein apna ghar dekhta hai, tumhari muskaan mein jeeta hai aur tumhari baahon mein apni poori zindagi mehsoos karta hai.
 
 Aaj bhi jab main aankhein band karta hoon, mujhe wahi raat yaad aati hai... wahi tum, wahi saansein, wahi sukoon. Tum meri duniya ho Sara, meri dua, meri zarurat, meri last had. Aur main bas itna jaanta hoon, uss din se lekar aaj tak, main tumhare bina kabhi poora nahi raha. ❤️✨`
                     }
@@ -791,7 +798,6 @@ Aaj bhi jab main aankhein band karta hoon, mujhe wahi raat yaad aati hai... wahi
             `;
             
             modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
         }
 
         function animateConstellation() {
@@ -891,7 +897,6 @@ Aaj bhi jab main aankhein band karta hoon, mujhe wahi raat yaad aati hai... wahi
 
         function switchScene(from, to) {
             document.getElementById(from).classList.remove('active');
-            document.body.style.overflow = 'hidden';
             setTimeout(() => {
                 document.getElementById(to).classList.add('active');
                 window.scrollTo(0, 0);
@@ -900,7 +905,6 @@ Aaj bhi jab main aankhein band karta hoon, mujhe wahi raat yaad aati hai... wahi
 
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
-            document.body.style.overflow = 'hidden';
         }
 
         document.getElementById('modalClose').onclick = closeModal;
@@ -914,9 +918,6 @@ Aaj bhi jab main aankhein band karta hoon, mujhe wahi raat yaad aati hai... wahi
 
         // Initialize
         createPinPad();
-        
-        // Ensure body doesn't scroll
-        document.body.style.overflow = 'hidden';
     </script>
 </body>
 </html>
