@@ -20,7 +20,7 @@
             position: fixed;
             width: 100%;
             height: 100vh;
-            touch-action: pan-y pinch-zoom;
+            touch-action: pan-y;
         }
 
         .scene {
@@ -171,7 +171,7 @@
             justify-content: center;
             gap: clamp(20px, 5vw, 40px);
             margin: 20px auto;
-            padding: 20px 10px;
+            padding: 20px 10px 60px;
             max-width: 600px;
         }
 
@@ -245,7 +245,7 @@
             z-index: 2000;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             padding: 20px;
         }
 
@@ -257,10 +257,10 @@
             background: rgba(0, 0, 0, 0.95);
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 20px;
-            padding: 40px 25px 25px;
+            padding: 50px 25px 25px;
             max-width: 500px;
             width: 100%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             box-shadow: 0 0 50px rgba(255, 255, 255, 0.3);
@@ -276,23 +276,26 @@
 
         .modal-close {
             position: absolute;
-            top: 10px;
+            top: 15px;
             right: 15px;
             font-size: 2rem;
             cursor: pointer;
             color: #fff;
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10;
             user-select: none;
             touch-action: manipulation;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
         }
 
         .modal-close:active {
             transform: scale(0.9);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .modal-content h2 {
@@ -304,17 +307,19 @@
         .modal-content p {
             line-height: 1.8;
             font-size: clamp(0.95rem, 3.5vw, 1.1rem);
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         /* CONSTELLATION ROOM */
         .constellation-container {
             position: relative;
             width: 100%;
-            min-height: 40vh;
+            min-height: 50vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
         .star-word {
@@ -324,11 +329,24 @@
             animation: starGlow 2s infinite;
             word-break: break-word;
             text-align: center;
+            transition: opacity 0.3s;
         }
 
         @keyframes starGlow {
             0%, 100% { text-shadow: 0 0 40px #fff; }
             50% { text-shadow: 0 0 60px #fff, 0 0 80px #ff6b9d; }
+        }
+
+        /* Hidden trigger */
+        .hidden-trigger {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: transparent;
+            cursor: pointer;
+            z-index: 50;
+            top: 5%;
+            left: 5%;
         }
 
         /* HIDDEN STAR */
@@ -342,8 +360,8 @@
             z-index: 100;
             user-select: none;
             touch-action: manipulation;
-            width: clamp(50px, 12vw, 70px);
-            height: clamp(50px, 12vw, 70px);
+            width: clamp(60px, 15vw, 80px);
+            height: clamp(60px, 15vw, 80px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -374,6 +392,8 @@
             font-size: clamp(1rem, 4vw, 1.6rem);
             line-height: 1.8;
             animation: floatIn 2s ease-out;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         @keyframes floatIn {
@@ -409,36 +429,19 @@
             }
         }
 
-        /* Nebula text animation */
-        .nebula-text {
-            padding: 20px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        @media (max-width: 480px) {
-            .planets-container {
-                gap: 30px 20px;
-            }
-            
-            .planet-label {
-                font-size: 0.75rem;
-            }
-        }
-
-        /* White Heart Styles */
+        /* White Heart */
         .white-heart {
             cursor: pointer;
             user-select: none;
             touch-action: manipulation;
+            display: inline-block;
         }
 
         .white-heart.glowing {
-            animation: glow 1s infinite alternate;
-            text-shadow: 0 0 10px #fff;
+            animation: heartGlow 1s infinite alternate;
         }
 
-        @keyframes glow {
+        @keyframes heartGlow {
             0% { text-shadow: 0 0 10px #fff; }
             100% { text-shadow: 0 0 20px #fff, 0 0 30px #ff6b9d; }
         }
@@ -446,18 +449,35 @@
         /* Gallery Scene */
         #galleryScene {
             flex-direction: column;
-            padding: 20px;
+            padding: 20px 10px;
+        }
+
+        .gallery-title {
+            font-size: clamp(1.2rem, 5vw, 1.8rem);
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            z-index: 10;
         }
 
         .gallery-container {
             position: relative;
             width: min(100%, 540px);
-            height: min(100vh - 100px, 960px);
+            height: min(calc(100vh - 160px), 960px);
             margin: auto;
             overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            background: #000;
         }
 
-        .slides img {
+        .gallery-slides {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .gallery-slides img {
             position: absolute;
             top: 0;
             left: 0;
@@ -466,10 +486,12 @@
             opacity: 0;
             transition: opacity 0.5s ease;
             object-fit: contain;
+            pointer-events: none;
         }
 
-        .slides img.active {
+        .gallery-slides img.active {
             opacity: 1;
+            pointer-events: auto;
         }
 
         .gallery-controls {
@@ -479,27 +501,116 @@
             transform: translateX(-50%);
             display: flex;
             gap: 20px;
+            z-index: 10;
         }
 
         .gallery-btn {
-            padding: 10px 20px;
+            padding: 12px 25px;
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid rgba(255, 255, 255, 0.5);
             color: #fff;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            user-select: none;
+            touch-action: manipulation;
         }
 
         .gallery-btn:active {
             background: rgba(255, 255, 255, 0.4);
-            transform: scale(0.97);
+            transform: scale(0.95);
         }
 
         @media (hover: hover) {
             .gallery-btn:hover {
                 background: rgba(255, 255, 255, 0.4);
-                transform: scale(1.03);
+                transform: scale(1.05);
+            }
+        }
+
+        .gallery-counter {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            z-index: 10;
+        }
+
+        /* Video Scene */
+        #videoScene {
+            flex-direction: column;
+            padding: 20px 10px;
+        }
+
+        .video-title {
+            font-size: clamp(1.2rem, 5vw, 1.8rem);
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            z-index: 10;
+        }
+
+        .video-container {
+            position: relative;
+            width: min(100%, 540px);
+            height: min(calc(100vh - 160px), 960px);
+            margin: auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            background: #000;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Nebula text */
+        .nebula-text {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 480px) {
+            .planets-container {
+                gap: 30px 20px;
+                padding-bottom: 80px;
+            }
+            
+            .planet-label {
+                font-size: 0.7rem;
+            }
+
+            .gallery-container {
+                height: min(calc(100vh - 140px), 960px);
+            }
+
+            .video-container {
+                height: min(calc(100vh - 140px), 960px);
+            }
+
+            .modal-inner {
+                padding: 45px 20px 20px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .galaxy-container {
+                height: min(calc(100vh - 120px), 960px);
+            }
+
+            .video-container {
+                height: min(calc(100vh - 120px), 960px);
             }
         }
     </style>
@@ -538,23 +649,36 @@
 
     <!-- GALLERY SCENE -->
     <div id="galleryScene" class="scene">
+        <h2 class="gallery-title">Our Precious Moments 💝</h2>
         <div class="gallery-container">
-            <div class="slides">
-                <img src="image/1.jpeg" alt="Slide 1">
-                <img src="image/2.jpeg" alt="Slide 2">
-                <img src="image/3.jpeg" alt="Slide 3">
-                <img src="image/4.jpeg" alt="Slide 4">
-                <img src="image/5.jpeg" alt="Slide 5">
-                <img src="image/6.jpeg" alt="Slide 6">
-                <img src="image/7.jpeg" alt="Slide 7">
-                <img src="image/8.jpeg" alt="Slide 8">
-                <img src="image/9.jpeg" alt="Slide 9">
-                <img src="image/10.jpeg" alt="Slide 10">
+            <div class="gallery-counter" id="galleryCounter">1 / 10</div>
+            <div class="gallery-slides">
+                <img src="image/1.jpeg" alt="Memory 1" class="active">
+                <img src="image/2.jpeg" alt="Memory 2">
+                <img src="image/3.jpeg" alt="Memory 3">
+                <img src="image/4.jpeg" alt="Memory 4">
+                <img src="image/5.jpeg" alt="Memory 5">
+                <img src="image/6.jpeg" alt="Memory 6">
+                <img src="image/7.jpeg" alt="Memory 7">
+                <img src="image/8.jpeg" alt="Memory 8">
+                <img src="image/9.jpeg" alt="Memory 9">
+                <img src="image/10.jpeg" alt="Memory 10">
             </div>
             <div class="gallery-controls">
-                <button class="gallery-btn" id="prevGalleryBtn">Prev</button>
-                <button class="gallery-btn" id="nextGalleryBtn">Next</button>
+                <button class="gallery-btn" id="prevGalleryBtn">← Prev</button>
+                <button class="gallery-btn" id="nextGalleryBtn">Next →</button>
             </div>
+        </div>
+    </div>
+
+    <!-- VIDEO SCENE -->
+    <div id="videoScene" class="scene">
+        <h2 class="video-title">A Special Message For You 💕</h2>
+        <div class="video-container">
+            <video controls playsinline preload="auto" controlsList="nodownload">
+                <source src="video/message.mp4" type="video/mp4">
+                Your browser doesn't support video playback.
+            </video>
         </div>
     </div>
 
@@ -571,11 +695,12 @@
         const CONFIG = {
             mainPIN: '4827',
             secretPIN: '2322',
-            thirdPIN: '3993', // Assumed third PIN; change as needed
+            thirdPIN: '1409',
+            fourthPIN: '2509',
             herName: 'Saraaaaaa♥️'
         };
 
-        // ===== PREVENT ZOOM ONLY (Allow scrolling) =====
+        // ===== PREVENT ZOOM =====
         let lastTouchEnd = 0;
         document.addEventListener('touchend', (e) => {
             const now = Date.now();
@@ -583,7 +708,7 @@
                 e.preventDefault();
             }
             lastTouchEnd = now;
-        }, false);
+        }, { passive: false });
 
         // ===== STAR CANVAS ANIMATION =====
         const canvas = document.getElementById('stars');
@@ -648,24 +773,27 @@
             }, 250);
         });
 
-        // ===== AUDIO CONTEXT (Handle mobile autoplay restrictions) =====
+        // ===== AUDIO CONTEXT =====
         let audioContext;
         let isAudioEnabled = false;
 
         function initAudio() {
             if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume();
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                    isAudioEnabled = true;
+                } catch(e) {
+                    console.log('Audio not supported');
                 }
-                isAudioEnabled = true;
             }
         }
 
         // ===== PIN SYSTEM =====
         let enteredPIN = '';
-        let isSecretPIN = false;
-        let isThirdPIN = false;
+        let currentPINLevel = 1;
         const pinDisplay = document.getElementById('pinDisplay');
         const pinPad = document.getElementById('pinPad');
 
@@ -725,25 +853,25 @@
 
         function checkPIN() {
             let correctPIN;
-            if (isThirdPIN) {
-                correctPIN = CONFIG.thirdPIN;
-            } else if (isSecretPIN) {
-                correctPIN = CONFIG.secretPIN;
-            } else {
-                correctPIN = CONFIG.mainPIN;
+            switch(currentPINLevel) {
+                case 1: correctPIN = CONFIG.mainPIN; break;
+                case 2: correctPIN = CONFIG.secretPIN; break;
+                case 3: correctPIN = CONFIG.thirdPIN; break;
+                case 4: correctPIN = CONFIG.fourthPIN; break;
             }
             
             if (enteredPIN === correctPIN) {
                 playSound('success');
                 nebulaColor = [255, 105, 180];
                 
-                if (isThirdPIN) {
-                    setTimeout(() => showGallery(), 1000);
-                } else if (isSecretPIN) {
-                    setTimeout(() => showFinalReveal(), 1000);
-                } else {
-                    setTimeout(() => unlockUniverse(), 1000);
-                }
+                setTimeout(() => {
+                    switch(currentPINLevel) {
+                        case 1: unlockUniverse(); break;
+                        case 2: showFinalReveal(); break;
+                        case 3: showGallery(); break;
+                        case 4: showVideo(); break;
+                    }
+                }, 1000);
             } else {
                 playSound('error');
                 pinDisplay.classList.add('error');
@@ -773,7 +901,7 @@
                 oscillator.start(audioContext.currentTime);
                 oscillator.stop(audioContext.currentTime + 0.5);
             } catch (e) {
-                console.log('Audio play failed:', e);
+                console.log('Audio play failed');
             }
         }
 
@@ -797,7 +925,7 @@
                     {
                         title: 'Saraaaaa ♥️',
                         text: `Us din jab hum mile the na sab kuch alag tha... hawa bhi alag chal rahi thi, waqt bhi jaise ruk sa gaya tha. Mujhe yaad hai tum mere saamne thi aur uss pal mein sab kuch bas tum par ruk gaya tha. Tumhari aankhon ka wo gehra nasha, tumhari muskaan ka wo halka sa chamak, tumhari saansein jo mere dil ki dhadkanon ke saath mil rahi thi... uss din laga tha jaise duniya ka saara sukoon mujhe mil gaya ho.
-                        
+
 Tum mere paas thi, itni kareeb ke main tumhe mehsoos kar sakta tha aur uss ek pal ne meri poori zindagi badal di. Tum meri aankhon ke saamne thi lekin lagta tha jaise main poori duniya tumhare zariye dekh raha hoon. Tum meri baahon mein sirf ek ehsaas nahi thi, tum meri zindagi ka sabse gehra lamha thi. Uss raat samundar ke kinaare sirf hawa nahi chal rahi thi, kuch mere andar bhi badal raha tha... jaise meri rooh ne tumhe apna ghar maan liya ho.
 
 Uss din mujhe samajh aaya tha ke tum meri aadat nahi, meri zarurat ho. Tum mere din ka sukoon, meri raat ka armaan ban gayi thi. Tum meri khamoshi ka matlab, meri dua ka jawab aur meri zindagi ka sabse khoobsurat hissa ban gayi thi.
@@ -831,7 +959,9 @@ Aaj bhi jab main aankhein band karta hoon, mujhe wahi raat yaad aati hai... wahi
                     </div>
                 `,
                 memories: [
-                    { title: 'Ahmiyat Tumhari', text: `Saraaaaaa♥️
+                    { 
+                        title: 'Ahmiyat Tumhari', 
+                        text: `Saraaaaaa♥️
 
 Pata nahi kab aur kaise hua bas itna jaanta hoon ki jabse tum meri zindagi mein aayi ho sab kuch alag lagta hai sab kuch zinda lagta hai Tum meri aadat nahi ho tum meri zarurat ho Tum meri life ka woh hissa ban gayi ho jiske bina main soch bhi nahi sakta apna aaj apna kal
 
@@ -846,15 +976,21 @@ Mujhe tum chahiye har din har pal har janam
 
 Bas ek baat yaad rakhna
 Main tumhe chhod nahi sakta bhool nahi sakta aur kisi aur mein tumhe dhoondh bhi nahi sakta
-Mera dil sirf tumhara hai aur rahega hamesha✨` },
-                    { title: 'Meri Jaaannn♥️', text: `Tum meri zindagi mein aayi aur sab kuch badalne laga Tumne mujhe sikhaya ki mohabbat sirf lafzon se nahi hoti usse mehsoos kiya jaata hai Tumne mere andar ka wo hissa zinda kar diya jo main khud bhool gaya tha Tum mere dinon mein sukoon aur raaton mein ek sense of peace le aayi ho
+Mera dil sirf tumhara hai aur rahega hamesha✨` 
+                    },
+                    { 
+                        title: 'Meri Jaaannn♥️', 
+                        text: `Tum meri zindagi mein aayi aur sab kuch badalne laga Tumne mujhe sikhaya ki mohabbat sirf lafzon se nahi hoti usse mehsoos kiya jaata hai Tumne mere andar ka wo hissa zinda kar diya jo main khud bhool gaya tha Tum mere dinon mein sukoon aur raaton mein ek sense of peace le aayi ho
 
 Tumne mujhe samjha jaise main khud ko kabhi nahi samajh paaya Tumne meri zindagi ko ek wajah di hai ek rhythm di hai Tumhari presence mere liye sirf comfort nahi hai wo ek assurance hai ke main jahan bhi rahun mujhe koi aisi shakl duniya mein mili hai jahan main poora mehsoos karta hoon
 
 Main tumhe dekh kar sirf khubsurti nahi dekhta main wo insaan dekhta hoon jise meri zindagi ne apne sabse gehre hisse mein likha hai Tum meri duniya ki sabse imandaar sachchai ho tum meri har khamoshi ka jawab ho aur meri har thakan ke baad ka sukoon ho
 
-Tum meri life ka sabse precious part ho Tum wo ho jiske hone se main apne aap ko behtar insaan mehsoos karta hoon Tum meri zarurat nahi meri aadat ban gayi ho aur ye aadat main kabhi chhodna nahi chahta Tum meri duniya ka wo hissa ho jahan sab kuch sahi lagta hai Tum meri simplicity aur meri peace dono ho` },
-                    { title: 'Saraaaa♥️', text: `Saraaaa♥️
+Tum meri life ka sabse precious part ho Tum wo ho jiske hone se main apne aap ko behtar insaan mehsoos karta hoon Tum meri zarurat nahi meri aadat ban gayi ho aur ye aadat main kabhi chhodna nahi chahta Tum meri duniya ka wo hissa ho jahan sab kuch sahi lagta hai Tum meri simplicity aur meri peace dono ho` 
+                    },
+                    { 
+                        title: 'Saraaaa♥️', 
+                        text: `Saraaaa♥️
 
 Kuch cheezein lafzon me bayan nahi hoti bas mehsoos hoti hain aur tum unhi me se ek ho
 Tum meri zindagi ka wo hissa ho jise main har roz aur gehra mehsoos karta hoon tum meri life ka sabse khoobsurat sach ho ek aisi presence jo mere din meri raat mere har emotion ka hissa ban chuki hai
@@ -876,8 +1012,11 @@ Main sirf tumhe paana nahi chahta main tumhe sambhalna chahta hoon
 Sirf tumse milna nahi chahta main tumhare saath poori zindagi jeena chahta hoon
 
 Tum meri rooh ho meri dua ho meri sabse badi jeet ho
-Aur main hamesha tumhara rahunga Saraaaa♥️ sirf tumhara 💞` },
-                    { title: 'Meri Baccchi💞', text: `Meri Saraaaaaa♥️
+Aur main hamesha tumhara rahunga Saraaaa♥️ sirf tumhara 💞` 
+                    },
+                    { 
+                        title: 'Meri Baccchi💞', 
+                        text: `Meri Saraaaaaa♥️
 
 Main jaanta hoon aaj mere lafz kam pad jaayenge
 kyunki jo galatfehmi tumhare dil mein hai uska dard main mehsoos kar sakta hoon
@@ -919,7 +1058,8 @@ yeh pyaar meri rooh ka hissa hai
 aur meri rooh sirf tumse judi hai
 
 Saraaaaaa♥️ tum meri duniya meri dua aur meri zindagi ho
-aur main yeh zindagi sirf tumhare saath jeena chahta hoon` }
+aur main yeh zindagi sirf tumhare saath jeena chahta hoon` 
+                    }
                 ]
             },
             {
@@ -935,7 +1075,7 @@ aur main yeh zindagi sirf tumhare saath jeena chahta hoon` }
                 title: 'Meri Biwi💗',
                 content: `
                     <div class="nebula-text cosmic-text">
-                        Saraaaa ♥️
+Saraaaa ♥️
 
 Pyaar mere liye sirf ek lafz nahi woh har ehsaas hai jo main tumhare liye mehsoos karta hoon
 Kabhi gussa hota hoon toh tumse nahi khud se hota hoon ki tum meri baat samajh nahi rahi ho
@@ -963,19 +1103,22 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
             currentChapter = index;
             const chapter = chapters[index];
             
+            if (!chapter) return;
+            
             document.getElementById('chapterTitle').textContent = chapter.title;
             document.getElementById('chapterContent').innerHTML = chapter.content;
 
-            // Clear previous intervals
             if (constellationInterval) clearInterval(constellationInterval);
             if (heartbeatInterval) clearInterval(heartbeatInterval);
 
-            if (chapter.memories.length > 0) {
+            if (chapter.memories && chapter.memories.length > 0) {
                 setTimeout(() => {
                     document.querySelectorAll('.planet').forEach(planet => {
                         planet.onclick = () => {
                             const memoryIndex = parseInt(planet.dataset.memory);
-                            showMemory(chapter.memories[memoryIndex]);
+                            if (chapter.memories[memoryIndex]) {
+                                showMemory(chapter.memories[memoryIndex]);
+                            }
                         };
                     });
                 }, 100);
@@ -983,6 +1126,7 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
 
             if (index === 2) {
                 animateConstellation();
+                setTimeout(() => addHiddenTrigger(), 3000);
             }
 
             if (index === 3) {
@@ -993,7 +1137,38 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
             }
         }
 
+        function addHiddenTrigger() {
+            const container = document.querySelector('.constellation-container');
+            if (!container || document.querySelector('.hidden-trigger')) return;
+            
+            const trigger = document.createElement('div');
+            trigger.className = 'hidden-trigger';
+            
+            let tapCount = 0;
+            let tapTimeout;
+            
+            trigger.onclick = (e) => {
+                e.stopPropagation();
+                tapCount++;
+                clearTimeout(tapTimeout);
+                
+                if (tapCount === 7) {
+                    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                    triggerFourthPIN();
+                    tapCount = 0;
+                }
+                
+                tapTimeout = setTimeout(() => {
+                    tapCount = 0;
+                }, 2000);
+            };
+            
+            container.appendChild(trigger);
+        }
+
         function showMemory(memory) {
+            if (!memory) return;
+            
             const modal = document.getElementById('modal');
             const content = document.getElementById('modalContent');
             
@@ -1010,12 +1185,16 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
             let wordIndex = 0;
             const starWord = document.querySelector('.star-word');
             
+            if (!starWord) return;
+            
             constellationInterval = setInterval(() => {
                 wordIndex = (wordIndex + 1) % words.length;
                 starWord.style.opacity = '0';
                 setTimeout(() => {
-                    starWord.textContent = words[wordIndex];
-                    starWord.style.opacity = '1';
+                    if (starWord) {
+                        starWord.textContent = words[wordIndex];
+                        starWord.style.opacity = '1';
+                    }
                 }, 300);
             }, 3000);
         }
@@ -1038,7 +1217,7 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
                     oscillator.start(audioContext.currentTime);
                     oscillator.stop(audioContext.currentTime + 0.2);
                 } catch (e) {
-                    console.log('Heartbeat sound failed:', e);
+                    console.log('Heartbeat failed');
                 }
             }
             
@@ -1057,7 +1236,7 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
 
         document.getElementById('hiddenStar').onclick = () => {
             initAudio();
-            isSecretPIN = true;
+            currentPINLevel = 2;
             enteredPIN = '';
             pinDisplay.textContent = '○○○○';
             document.querySelector('.cosmic-text').innerHTML = '🔐 One more secret remains...<br>Only the deepest connection knows this key.';
@@ -1068,8 +1247,7 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
         function showFinalReveal() {
             switchScene('pinScene', 'finalScene');
             
-            const message = `
-                ✨ ${CONFIG.herName} Tum jaanti ho main har din tumhe bas dekhta hoon
+            const message = `✨ ${CONFIG.herName} Tum jaanti ho main har din tumhe bas dekhta hoon
 sirf aankhon se nahi dil se
 Aur jitna zyada main tumhe samajhta jaata hoon
 utna hi mujhe ehsaas hota hai ki tum meri zindagi ka sabse khoobsurat hissa ho 🌙
@@ -1099,25 +1277,27 @@ tum sirf pyaari nahi ho tum ehm ho 🌙✨
 Tumhari har muskaan mere din ka sabse khoobsurat pal hoti hai
 aur tumhara saath mere liye ek dua jaisa hai
 jisko main har roz dil se maangta hoon
-bina kisi shart bina kisi wajah ke bas tum 🤍
-            `;
+bina kisi shart bina kisi wajah ke bas tum 🤍`;
             
             const finalMsg = document.getElementById('finalMessage');
+            if (!finalMsg) return;
+            
             finalMsg.innerHTML = '';
             let i = 0;
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = message;
-            const text = tempDiv.textContent; // Use textContent for typing
             
             function typeMessage() {
-                if (i < text.length) {
-                    finalMsg.innerHTML += text.charAt(i);
+                if (i < message.length) {
+                    const char = message.charAt(i);
+                    if (char === '\n') {
+                        finalMsg.innerHTML += '<br>';
+                    } else {
+                        finalMsg.innerHTML += char;
+                    }
                     i++;
                     setTimeout(typeMessage, 30);
                 } else {
-                    // After typing, wrap the white hearts
                     finalMsg.innerHTML = finalMsg.innerHTML.replace(/🤍/g, '<span class="white-heart">🤍</span>');
-                    attachLongPressListeners();
+                    setTimeout(() => attachLongPressListeners(), 100);
                 }
             }
             
@@ -1132,9 +1312,12 @@ bina kisi shart bina kisi wajah ke bas tum 🤍
 
                 const startPress = (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
+                    
                     glowTimer = setTimeout(() => {
                         heart.classList.add('glowing');
                     }, 2000);
+                    
                     pressTimer = setTimeout(() => {
                         if (navigator.vibrate) navigator.vibrate(200);
                         triggerThirdPIN();
@@ -1147,7 +1330,7 @@ bina kisi shart bina kisi wajah ke bas tum 🤍
                     heart.classList.remove('glowing');
                 };
 
-                heart.addEventListener('touchstart', startPress, {passive: true});
+                heart.addEventListener('touchstart', startPress, {passive: false});
                 heart.addEventListener('touchend', endPress);
                 heart.addEventListener('touchcancel', endPress);
                 heart.addEventListener('mousedown', startPress);
@@ -1157,57 +1340,114 @@ bina kisi shart bina kisi wajah ke bas tum 🤍
         }
 
         function triggerThirdPIN() {
-            isThirdPIN = true;
-            isSecretPIN = false;
+            currentPINLevel = 3;
             enteredPIN = '';
             pinDisplay.textContent = '○○○○';
-            document.querySelector('.cosmic-text').innerHTML = '🔐 The deepest secret awaits...<br>Enter the key of pure love.';
+            document.querySelector('.cosmic-text').innerHTML = '💝 The deepest secret awaits...<br>Enter the key of pure love.';
             switchScene('finalScene', 'pinScene');
+        }
+
+        function triggerFourthPIN() {
+            currentPINLevel = 4;
+            enteredPIN = '';
+            pinDisplay.textContent = '○○○○';
+            document.querySelector('.cosmic-text').innerHTML = '🎬 The ultimate treasure...<br>Only true love finds this path.';
+            switchScene('galaxyScene', 'pinScene');
         }
 
         function showGallery() {
             switchScene('pinScene', 'galleryScene');
-            initGallery();
+            setTimeout(() => initGallery(), 600);
+        }
+
+        function showVideo() {
+            switchScene('pinScene', 'videoScene');
+            setTimeout(() => {
+                const video = document.querySelector('#videoScene video');
+                if (video) {
+                    video.load();
+                }
+            }, 600);
         }
 
         let currentSlide = 0;
+        let galleryInitialized = false;
+        
         function initGallery() {
-            const slides = document.querySelectorAll('.slides img');
+            if (galleryInitialized) return;
+            galleryInitialized = true;
+            
+            const slides = document.querySelectorAll('.gallery-slides img');
             const prevBtn = document.getElementById('prevGalleryBtn');
             const nextBtn = document.getElementById('nextGalleryBtn');
+            const counter = document.getElementById('galleryCounter');
+            let touchStartX = 0;
+            let touchEndX = 0;
 
             function showSlide(n) {
                 slides.forEach(s => s.classList.remove('active'));
                 currentSlide = (n + slides.length) % slides.length;
                 slides[currentSlide].classList.add('active');
+                if (counter) counter.textContent = `${currentSlide + 1} / ${slides.length}`;
             }
 
-            prevBtn.onclick = () => showSlide(currentSlide - 1);
-            nextBtn.onclick = () => showSlide(currentSlide + 1);
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                if (touchEndX < touchStartX - swipeThreshold) {
+                    showSlide(currentSlide + 1);
+                }
+                if (touchEndX > touchStartX + swipeThreshold) {
+                    showSlide(currentSlide - 1);
+                }
+            }
+
+            const galleryContainer = document.querySelector('.gallery-container');
+            if (galleryContainer) {
+                galleryContainer.addEventListener('touchstart', e => {
+                    touchStartX = e.changedTouches[0].screenX;
+                }, {passive: true});
+
+                galleryContainer.addEventListener('touchend', e => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                }, {passive: true});
+            }
+
+            if (prevBtn) prevBtn.onclick = () => showSlide(currentSlide - 1);
+            if (nextBtn) nextBtn.onclick = () => showSlide(currentSlide + 1);
 
             showSlide(0);
         }
 
         function switchScene(from, to) {
-            document.getElementById(from).classList.remove('active');
+            const fromScene = document.getElementById(from);
+            const toScene = document.getElementById(to);
+            
+            if (!fromScene || !toScene) return;
+            
+            fromScene.classList.remove('active');
             setTimeout(() => {
-                document.getElementById(to).classList.add('active');
+                toScene.classList.add('active');
                 window.scrollTo(0, 0);
             }, 500);
         }
 
         function closeModal() {
-            document.getElementById('modal').classList.remove('active');
+            const modal = document.getElementById('modal');
+            if (modal) modal.classList.remove('active');
         }
 
-        document.getElementById('modalClose').onclick = closeModal;
+        const modalClose = document.getElementById('modalClose');
+        if (modalClose) modalClose.onclick = closeModal;
         
-        // Close modal when clicking outside
-        document.getElementById('modal').onclick = (e) => {
-            if (e.target.id === 'modal') {
-                closeModal();
-            }
-        };
+        const modal = document.getElementById('modal');
+        if (modal) {
+            modal.onclick = (e) => {
+                if (e.target.id === 'modal') {
+                    closeModal();
+                }
+            };
+        }
 
         // Initialize
         createPinPad();
