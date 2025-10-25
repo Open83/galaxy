@@ -156,6 +156,7 @@
             padding: 20px;
             max-width: 100%;
             width: 100%;
+            position: relative;
         }
 
         .chapter-title {
@@ -340,51 +341,61 @@
 
         /* Hidden trigger */
         .hidden-trigger {
-            position: absolute;
-            width: 50px;
-            height: 50px;
+            position: fixed;
+            width: 60px;
+            height: 60px;
             background: transparent;
             cursor: pointer;
-            z-index: 50;
+            z-index: 100;
             top: 5%;
             left: 5%;
             opacity: 0;
             border-radius: 50%;
-            transition: all 0.3s ease;
+            transition: all 0.5s ease;
+            pointer-events: auto;
         }
 
         .hidden-trigger.show-hint {
             opacity: 1;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent);
             animation: triggerPulse 2s infinite;
+            pointer-events: auto;
         }
 
         @keyframes triggerPulse {
             0%, 100% { 
-                box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.6),
+                            0 0 25px rgba(255, 105, 180, 0.4);
                 transform: scale(1);
             }
             50% { 
-                box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 50px rgba(255, 105, 180, 0.6);
-                transform: scale(1.1);
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.9), 
+                            0 0 50px rgba(255, 105, 180, 0.7),
+                            0 0 70px rgba(255, 105, 180, 0.5);
+                transform: scale(1.15);
             }
         }
 
         .hint-text {
-            position: absolute;
-            top: 15%;
+            position: fixed;
+            top: 18%;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             padding: 15px 25px;
             border-radius: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            font-size: clamp(0.85rem, 3vw, 1rem);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            font-size: clamp(0.9rem, 3.5vw, 1.1rem);
             text-align: center;
             opacity: 0;
             pointer-events: none;
-            z-index: 100;
-            max-width: 90%;
+            z-index: 150;
+            max-width: 85%;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            line-height: 1.6;
+        }
+
+        .hint-text.show {
             animation: hintFadeIn 1s ease-out forwards;
         }
 
@@ -756,8 +767,11 @@
             thirdPIN: '1409',
             fourthPIN: '2509',
             herName: 'Saraaaaaa♥️',
-            hintDelay: 60000 // 1 minute in milliseconds
+            hintDelay: 10000 // 10 seconds for testing (change to 60000 for 1 minute)
         };
+
+        console.log('🌌 App initialized');
+        console.log('⏱️ Hint will show after:', CONFIG.hintDelay / 1000, 'seconds');
 
         // ===== PREVENT ZOOM =====
         let lastTouchEnd = 0;
@@ -1157,10 +1171,11 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
         let currentChapter = 0;
         let constellationInterval;
         let heartbeatInterval;
-        let hintTimer;
-        let constellationStartTime;
+        let hintTimer = null;
+        let hiddenTriggerElement = null;
 
         function startChapter(index) {
+            console.log('🎯 Starting chapter:', index);
             currentChapter = index;
             const chapter = chapters[index];
             
@@ -1169,10 +1184,8 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
             document.getElementById('chapterTitle').textContent = chapter.title;
             document.getElementById('chapterContent').innerHTML = chapter.content;
 
-            // Clear timers
-            if (constellationInterval) clearInterval(constellationInterval);
-            if (heartbeatInterval) clearInterval(heartbeatInterval);
-            if (hintTimer) clearTimeout(hintTimer);
+            // Clear all timers
+            clearAllTimers();
 
             if (chapter.memories && chapter.memories.length > 0) {
                 setTimeout(() => {
@@ -1187,10 +1200,14 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
                 }, 100);
             }
 
+            // Chapter 2 = Constellation Room (index 2)
             if (index === 2) {
+                console.log('💫 Entered Constellation Room - Starting hint timer');
                 animateConstellation();
-                constellationStartTime = Date.now();
-                setTimeout(() => addHiddenTrigger(), 3000);
+                setTimeout(() => {
+                    addHiddenTrigger();
+                    startHintTimer();
+                }, 3000);
             }
 
             if (index === 3) {
@@ -1201,12 +1218,47 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
             }
         }
 
+        function clearAllTimers() {
+            if (constellationInterval) {
+                clearInterval(constellationInterval);
+                constellationInterval = null;
+            }
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
+            }
+            if (hintTimer) {
+                clearTimeout(hintTimer);
+                hintTimer = null;
+                console.log('⏱️ Hint timer cleared');
+            }
+            
+            // Remove hint elements
+            const existingHint = document.querySelector('.hint-text');
+            if (existingHint) existingHint.remove();
+            
+            if (hiddenTriggerElement) {
+                hiddenTriggerElement.classList.remove('show-hint');
+            }
+        }
+
+        function startHintTimer() {
+            console.log('⏱️ Hint timer started - will show in', CONFIG.hintDelay / 1000, 'seconds');
+            
+            hintTimer = setTimeout(() => {
+                console.log('✨ Showing hint now!');
+                showHint();
+            }, CONFIG.hintDelay);
+        }
+
         function addHiddenTrigger() {
-            const container = document.querySelector('.constellation-container');
-            if (!container || document.querySelector('.hidden-trigger')) return;
+            // Remove existing trigger if any
+            const existing = document.querySelector('.hidden-trigger');
+            if (existing) existing.remove();
             
             const trigger = document.createElement('div');
             trigger.className = 'hidden-trigger';
+            hiddenTriggerElement = trigger;
             
             let tapCount = 0;
             let tapTimeout;
@@ -1217,20 +1269,19 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
                 tapCount++;
                 clearTimeout(tapTimeout);
                 
-                console.log(`Tap count: ${tapCount}/7`);
+                console.log(`👆 Tap count: ${tapCount}/7`);
                 
                 if (tapCount === 7) {
+                    console.log('🎉 7 taps completed! Opening 4th PIN');
                     if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                     triggerFourthPIN();
                     tapCount = 0;
-                    
-                    // Remove hint if showing
-                    const existingHint = document.querySelector('.hint-text');
-                    if (existingHint) existingHint.remove();
-                    trigger.classList.remove('show-hint');
                 }
                 
                 tapTimeout = setTimeout(() => {
+                    if (tapCount > 0) {
+                        console.log('⏰ Tap timeout - reset to 0');
+                    }
                     tapCount = 0;
                 }, 2000);
             };
@@ -1238,28 +1289,28 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
             trigger.addEventListener('click', handleTap);
             trigger.addEventListener('touchstart', handleTap, {passive: false});
             
-            container.appendChild(trigger);
-            
-            // Start hint timer (1 minute)
-            hintTimer = setTimeout(() => {
-                showHint(trigger);
-            }, CONFIG.hintDelay);
+            document.body.appendChild(trigger);
+            console.log('🎯 Hidden trigger added to page');
         }
 
-        function showHint(trigger) {
-            const container = document.querySelector('.constellation-container');
-            if (!container) return;
+        function showHint() {
+            if (!hiddenTriggerElement) {
+                console.log('❌ Trigger element not found');
+                return;
+            }
             
-            // Make trigger visible with glow
-            trigger.classList.add('show-hint');
+            console.log('💡 Making trigger visible with glow');
+            
+            // Make trigger visible
+            hiddenTriggerElement.classList.add('show-hint');
             
             // Add hint text
             const hintText = document.createElement('div');
-            hintText.className = 'hint-text';
-            hintText.innerHTML = '💫 Something magical is hidden here...<br>Tap the glowing spot 7 times! ✨';
-            container.appendChild(hintText);
+            hintText.className = 'hint-text show';
+            hintText.innerHTML = '💫 Something magical is hidden here...<br>Tap the glowing spot in top-left 7 times! ✨';
+            document.body.appendChild(hintText);
             
-            console.log('Hint activated! Trigger is now visible in top-left corner.');
+            console.log('✅ Hint is now visible!');
         }
 
         function showMemory(memory) {
@@ -1325,8 +1376,7 @@ Bas kabhi kabhi tum bhool jaati ho aur main sirf yaad dilata hoon ki tum mere li
 
         document.getElementById('nextBtn').onclick = () => {
             if (currentChapter < chapters.length - 1) {
-                // Clear hint timer when leaving constellation room
-                if (hintTimer) clearTimeout(hintTimer);
+                clearAllTimers();
                 startChapter(currentChapter + 1);
                 window.scrollTo(0, 0);
             }
@@ -1451,9 +1501,7 @@ bina kisi shart bina kisi wajah ke bas tum 🤍`;
             pinDisplay.textContent = '○○○○';
             document.querySelector('.cosmic-text').innerHTML = '🎬 The ultimate treasure...<br>Only true love finds this path.';
             
-            // Clear hint timer
-            if (hintTimer) clearTimeout(hintTimer);
-            
+            clearAllTimers();
             switchScene('galaxyScene', 'pinScene');
         }
 
@@ -1554,14 +1602,26 @@ bina kisi shart bina kisi wajah ke bas tum 🤍`;
         // Initialize
         createPinPad();
         
-        // Console log for testing
-        console.log('🌌 Eternal Universe initialized!');
-        console.log('📍 How to find 4th PIN:');
-        console.log('1. Navigate to "The Constellation Room" (Chapter 3)');
-        console.log('2. Wait for 1 minute OR look for glowing spot in top-left corner');
-        console.log('3. Tap the glowing spot 7 times within 2 seconds');
-        console.log('4. Enter PIN: ' + CONFIG.fourthPIN);
-        console.log('5. Enjoy the video message! 🎬');
+        // Final console guide
+        console.log('═══════════════════════════════════════════');
+        console.log('🌌 ETERNAL UNIVERSE - FULLY INITIALIZED');
+        console.log('═══════════════════════════════════════════');
+        console.log('');
+        console.log('📍 HOW TO FIND 4TH PIN SCREEN:');
+        console.log('');
+        console.log('1️⃣  Enter PIN: 4827');
+        console.log('2️⃣  Click "Continue Journey" twice');
+        console.log('3️⃣  You will reach "The Constellation Room"');
+        console.log('4️⃣  WAIT ' + (CONFIG.hintDelay/1000) + ' SECONDS');
+        console.log('5️⃣  A glowing spot will appear in TOP-LEFT corner');
+        console.log('6️⃣  Hint text will show: "Tap the glowing spot 7 times"');
+        console.log('7️⃣  TAP the glowing spot 7 TIMES within 2 seconds');
+        console.log('8️⃣  Enter 4th PIN: 2509');
+        console.log('9️⃣  Enjoy the video! 🎬');
+        console.log('');
+        console.log('═══════════════════════════════════════════');
+        console.log('✨ All bugs fixed! Hint system working!');
+        console.log('═══════════════════════════════════════════');
     </script>
 </body>
 </html>
